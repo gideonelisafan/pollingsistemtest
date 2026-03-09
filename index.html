@@ -1,245 +1,251 @@
-import React, { useState, useEffect } from 'react';
-import { Ticket, UserCheck, CheckCircle2, AlertCircle, Loader2, Star } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting Malam Puncak Bakat</title>
+  
+  <!-- Tailwind CSS dari CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM dari CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel untuk membaca JSX di browser -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
-// ==========================================
-// PENGATURAN KONEKSI DATABASE
-// ==========================================
-// Ubah menjadi 'false' jika sudah memiliki URL Google Apps Script
-const USE_MOCK_DATA = false; 
-// Masukkan URL Web App dari Google Apps Script di sini nanti
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJluO7UUxDYcOjvwIx2wvK-PL7XurqGwFKn4m5oxbPA3SSN8vAgFrN4SB20HGXXglftg/exec"; 
+  <style>
+    /* Animasi sederhana */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    .animate-zoom-in { animation: zoomIn 0.5s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans selection:bg-amber-500 selection:text-white pb-10">
+  <div id="root"></div>
 
-// ==========================================
-// DATA SIMULASI (MOCK DATA)
-// ==========================================
-const MOCK_CODES = ['TEST01', 'TEST02', 'TEST03'];
-let usedMockCodes = []; // Menyimpan kode yang sudah dipakai di memori sementara
-const MOCK_CANDIDATES = [
-  { id: 'K01', name: 'Budi Santoso', talent: 'Solo Vokal', photo: 'https://images.unsplash.com/photo-1516280440502-1262ab0b0168?auto=format&fit=crop&q=80&w=500' },
-  { id: 'K02', name: 'Grup Tari Saman', talent: 'Tari Tradisional', photo: 'https://images.unsplash.com/photo-1475823678248-624fc6f85785?auto=format&fit=crop&q=80&w=500' },
-  { id: 'K03', name: 'Rizky Magic', talent: 'Sulap / Ilusi', photo: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=500' },
-  { id: 'K04', name: 'The Rockers', talent: 'Band Musik', photo: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f5f4b2?auto=format&fit=crop&q=80&w=500' }
-];
+  <script type="text/babel">
+    const { useState } = React;
 
-export default function App() {
-  const [step, setStep] = useState('login'); // 'login', 'voting', 'success'
-  const [uniqueCode, setUniqueCode] = useState('');
-  const [candidates, setCandidates] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
+    // ==========================================
+    // PENGATURAN KONEKSI DATABASE
+    // ==========================================
+    const USE_MOCK_DATA = false; 
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzJluO7UUxDYcOjvwIx2wvK-PL7XurqGwFKn4m5oxbPA3SSN8vAgFrN4SB20HGXXglftg/exec"; 
 
-  // Fungsi untuk memanggil API / Google Apps Script
-  const callApi = async (action, payload = {}) => {
-    if (USE_MOCK_DATA) {
-      // --- LOGIK SIMULASI ---
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (action === 'verify') {
-            if (!MOCK_CODES.includes(payload.code)) return reject(new Error('Kode unik tidak valid!'));
-            if (usedMockCodes.includes(payload.code)) return reject(new Error('Kode ini sudah digunakan untuk memvoting.'));
-            resolve({ success: true, candidates: MOCK_CANDIDATES });
-          } else if (action === 'vote') {
-            usedMockCodes.push(payload.code);
-            resolve({ success: true });
-          }
-        }, 1000); // Simulasi delay jaringan 1 detik
-      });
-    } else {
-      // --- LOGIK REAL (GOOGLE SHEETS) ---
-      try {
-        const response = await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          // Menggunakan text/plain untuk menghindari masalah CORS preflight di GAS
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-          body: JSON.stringify({ action, ...payload })
-        });
-        const data = await response.json();
-        if (!data.success) throw new Error(data.message || 'Terjadi kesalahan dari server.');
-        return data;
-      } catch (err) {
-        throw new Error(err.message || 'Gagal terhubung ke server.');
-      }
-    }
-  };
+    // Komponen Ikon (Menggantikan lucide-react agar tidak butuh install)
+    const IconStar = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
+    const IconTicket = ({size}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>;
+    const IconAlert = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+    const IconUserCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>;
+    const IconLoader = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>;
+    const IconCheck = ({size=24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!uniqueCode.trim()) {
-      setErrorMsg('Harap masukkan kode unik Anda.');
-      return;
-    }
-    setErrorMsg('');
-    setIsLoading(true);
+    function App() {
+      const [step, setStep] = useState('login'); 
+      const [uniqueCode, setUniqueCode] = useState('');
+      const [candidates, setCandidates] = useState([]);
+      const [isLoading, setIsLoading] = useState(false);
+      const [errorMsg, setErrorMsg] = useState('');
+      const [selectedCandidate, setSelectedCandidate] = useState(null);
 
-    try {
-      const data = await callApi('verify', { code: uniqueCode.toUpperCase() });
-      setCandidates(data.candidates);
-      setStep('voting');
-    } catch (err) {
-      setErrorMsg(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      const callApi = async (action, payload = {}) => {
+        try {
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+            body: JSON.stringify({ action, ...payload })
+          });
+          const data = await response.json();
+          if (!data.success) throw new Error(data.message || 'Terjadi kesalahan dari server.');
+          return data;
+        } catch (err) {
+          throw new Error(err.message || 'Gagal terhubung ke server. Pastikan koneksi internet aktif.');
+        }
+      };
 
-  const handleVote = async () => {
-    if (!selectedCandidate) {
-      setErrorMsg('Pilih salah satu kandidat terlebih dahulu!');
-      return;
-    }
-    setErrorMsg('');
-    setIsLoading(true);
+      const handleLogin = async (e) => {
+        e.preventDefault();
+        if (!uniqueCode.trim()) {
+          setErrorMsg('Harap masukkan kode unik Anda.');
+          return;
+        }
+        setErrorMsg('');
+        setIsLoading(true);
 
-    try {
-      await callApi('vote', { 
-        code: uniqueCode.toUpperCase(), 
-        candidateId: selectedCandidate.id 
-      });
-      setStep('success');
-    } catch (err) {
-      setErrorMsg(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        try {
+          const data = await callApi('verify', { code: uniqueCode.toUpperCase() });
+          setCandidates(data.candidates);
+          setStep('voting');
+        } catch (err) {
+          setErrorMsg(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans selection:bg-amber-500 selection:text-white pb-10">
-      {/* Header */}
-      <header className="bg-slate-800 shadow-lg p-6 text-center border-b border-amber-500/30">
-        <h1 className="text-2xl md:text-3xl font-bold text-amber-400 uppercase tracking-wider flex items-center justify-center gap-2">
-          <Star className="text-amber-400" fill="currentColor" />
-          Malam Puncak Bakat
-          <Star className="text-amber-400" fill="currentColor" />
-        </h1>
-        <p className="text-slate-400 text-sm mt-2">Voting Penonton Secara Langsung</p>
-      </header>
+      const handleVote = async () => {
+        if (!selectedCandidate) {
+          setErrorMsg('Pilih salah satu kandidat terlebih dahulu!');
+          return;
+        }
+        setErrorMsg('');
+        setIsLoading(true);
 
-      <main className="max-w-md md:max-w-4xl mx-auto px-4 mt-8">
-        
-        {/* VIEW 1: LOGIN KODE UNIK */}
-        {step === 'login' && (
-          <div className="bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md mx-auto border border-slate-700">
-            <div className="flex justify-center mb-6">
-              <div className="bg-slate-700 p-4 rounded-full text-amber-400">
-                <Ticket size={40} />
-              </div>
-            </div>
-            <h2 className="text-xl font-semibold text-center mb-2">Akses Voting</h2>
-            <p className="text-slate-400 text-center text-sm mb-6">Masukkan kode unik yang Anda dapatkan di lokasi acara untuk mulai memilih kandidat favorit Anda.</p>
+        try {
+          await callApi('vote', { 
+            code: uniqueCode.toUpperCase(), 
+            candidateId: selectedCandidate.id 
+          });
+          setStep('success');
+        } catch (err) {
+          setErrorMsg(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      return (
+        <div>
+          {/* Header */}
+          <header className="bg-slate-800 shadow-lg p-6 text-center border-b border-amber-500/30">
+            <h1 className="text-2xl md:text-3xl font-bold text-amber-400 uppercase tracking-wider flex items-center justify-center gap-2">
+              <IconStar /> Malam Puncak Bakat <IconStar />
+            </h1>
+            <p className="text-slate-400 text-sm mt-2">Voting Penonton Secara Langsung</p>
+          </header>
+
+          <main className="max-w-md md:max-w-4xl mx-auto px-4 mt-8">
             
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  placeholder="KODE UNIK (contoh: TEST01)"
-                  value={uniqueCode}
-                  onChange={(e) => setUniqueCode(e.target.value.toUpperCase())}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-center text-lg font-mono tracking-widest text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors placeholder:text-slate-600"
-                  disabled={isLoading}
-                />
-              </div>
-
-              {errorMsg && (
-                <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg text-sm">
-                  <AlertCircle size={18} />
-                  <p>{errorMsg}</p>
+            {/* VIEW 1: LOGIN KODE UNIK */}
+            {step === 'login' && (
+              <div className="bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md mx-auto border border-slate-700">
+                <div className="flex justify-center mb-6">
+                  <div className="bg-slate-700 p-4 rounded-full text-amber-400">
+                    <IconTicket size={40} />
+                  </div>
                 </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? <Loader2 className="animate-spin" /> : <UserCheck />}
-                {isLoading ? 'Memverifikasi...' : 'Masuk & Mulai Vote'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* VIEW 2: PILIH KANDIDAT */}
-        {step === 'voting' && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex justify-between items-end mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Pilih Favoritmu!</h2>
-                <p className="text-amber-400 text-sm mt-1">Kode: <span className="font-mono bg-slate-800 px-2 py-1 rounded">{uniqueCode}</span></p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {candidates.map((cand) => (
-                <div 
-                  key={cand.id}
-                  onClick={() => setSelectedCandidate(cand)}
-                  className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-200 border-2 ${
-                    selectedCandidate?.id === cand.id 
-                      ? 'border-amber-400 scale-[1.02] shadow-[0_0_20px_rgba(251,191,36,0.3)]' 
-                      : 'border-slate-700 hover:border-slate-500 bg-slate-800'
-                  }`}
-                >
-                  <div className="h-64 overflow-hidden bg-slate-700">
-                    <img 
-                      src={cand.photo} 
-                      alt={cand.name} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.target.src = "https://placehold.co/500x500/1e293b/f8fafc?text=Foto+Kandidat"; }}
+                <h2 className="text-xl font-semibold text-center mb-2">Akses Voting</h2>
+                <p className="text-slate-400 text-center text-sm mb-6">Masukkan kode unik yang Anda dapatkan di lokasi acara untuk mulai memilih kandidat favorit Anda.</p>
+                
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="KODE UNIK"
+                      value={uniqueCode}
+                      onChange={(e) => setUniqueCode(e.target.value.toUpperCase())}
+                      className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-center text-lg font-mono tracking-widest text-white focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors placeholder:text-slate-600"
+                      disabled={isLoading}
                     />
                   </div>
-                  <div className="p-4 bg-slate-800">
-                    <h3 className="text-lg font-bold text-white">{cand.name}</h3>
-                    <p className="text-slate-400 text-sm">{cand.talent}</p>
-                  </div>
-                  
-                  {/* Indikator terpilih */}
-                  {selectedCandidate?.id === cand.id && (
-                    <div className="absolute top-4 right-4 bg-amber-400 text-slate-900 p-1.5 rounded-full shadow-lg">
-                      <CheckCircle2 size={24} />
+
+                  {errorMsg && (
+                    <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg text-sm">
+                      <IconAlert />
+                      <p>{errorMsg}</p>
                     </div>
                   )}
-                </div>
-              ))}
-            </div>
 
-            {errorMsg && (
-              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-4 rounded-xl text-sm mb-6 justify-center max-w-md mx-auto">
-                <AlertCircle size={18} />
-                <p>{errorMsg}</p>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? <IconLoader /> : <IconUserCheck />}
+                    {isLoading ? 'Memverifikasi...' : 'Masuk & Mulai Vote'}
+                  </button>
+                </form>
               </div>
             )}
 
-            <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md p-4 border-t border-slate-700 flex justify-center z-50">
-              <button
-                onClick={handleVote}
-                disabled={!selectedCandidate || isLoading}
-                className="w-full max-w-md bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-              >
-                {isLoading ? <Loader2 className="animate-spin" /> : <CheckCircle2 />}
-                {isLoading ? 'Menyimpan Pilihan...' : selectedCandidate ? `Vote ${selectedCandidate.name}` : 'Pilih Kandidat Dulu'}
-              </button>
-            </div>
-          </div>
-        )}
+            {/* VIEW 2: PILIH KANDIDAT */}
+            {step === 'voting' && (
+              <div className="animate-fade-in pb-20">
+                <div className="flex justify-between items-end mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">Pilih Favoritmu!</h2>
+                    <p className="text-amber-400 text-sm mt-1">Kode: <span className="font-mono bg-slate-800 px-2 py-1 rounded">{uniqueCode}</span></p>
+                  </div>
+                </div>
 
-        {/* VIEW 3: SUKSES */}
-        {step === 'success' && (
-          <div className="bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md mx-auto border border-slate-700 text-center animate-in zoom-in duration-500 mt-10">
-            <div className="flex justify-center mb-6">
-              <div className="bg-emerald-500/20 p-4 rounded-full text-emerald-400">
-                <CheckCircle2 size={60} />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                  {candidates.map((cand) => (
+                    <div 
+                      key={cand.id}
+                      onClick={() => setSelectedCandidate(cand)}
+                      className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-200 border-2 ${
+                        selectedCandidate && selectedCandidate.id === cand.id 
+                          ? 'border-amber-400 scale-[1.02] shadow-[0_0_20px_rgba(251,191,36,0.3)]' 
+                          : 'border-slate-700 hover:border-slate-500 bg-slate-800'
+                      }`}
+                    >
+                      <div className="h-64 overflow-hidden bg-slate-700">
+                        <img 
+                          src={cand.photo} 
+                          alt={cand.name} 
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = "https://placehold.co/500x500/1e293b/f8fafc?text=Foto+Kandidat"; }}
+                        />
+                      </div>
+                      <div className="p-4 bg-slate-800">
+                        <h3 className="text-lg font-bold text-white">{cand.name}</h3>
+                        <p className="text-slate-400 text-sm">{cand.talent}</p>
+                      </div>
+                      
+                      {selectedCandidate && selectedCandidate.id === cand.id && (
+                        <div className="absolute top-4 right-4 bg-amber-400 text-slate-900 p-1.5 rounded-full shadow-lg">
+                          <IconCheck size={24} />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {errorMsg && (
+                  <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-4 rounded-xl text-sm mb-6 justify-center max-w-md mx-auto">
+                    <IconAlert />
+                    <p>{errorMsg}</p>
+                  </div>
+                )}
+
+                <div className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-md p-4 border-t border-slate-700 flex justify-center z-50">
+                  <button
+                    onClick={handleVote}
+                    disabled={!selectedCandidate || isLoading}
+                    className="w-full max-w-md bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                  >
+                    {isLoading ? <IconLoader /> : <IconCheck size={24} />}
+                    {isLoading ? 'Menyimpan Pilihan...' : selectedCandidate ? `Vote ${selectedCandidate.name}` : 'Pilih Kandidat Dulu'}
+                  </button>
+                </div>
               </div>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Terima Kasih!</h2>
-            <p className="text-slate-400 mb-6">Suara Anda telah berhasil dicatat ke dalam sistem. Kode <b>{uniqueCode}</b> kini tidak dapat digunakan lagi.</p>
-            <div className="bg-slate-700 p-4 rounded-xl text-sm text-slate-300">
-              Silakan kembali menikmati jalannya acara.
-            </div>
-          </div>
-        )}
-      </main>
-    </div>
-  );
-}
+            )}
+
+            {/* VIEW 3: SUKSES */}
+            {step === 'success' && (
+              <div className="bg-slate-800 p-8 rounded-2xl shadow-xl max-w-md mx-auto border border-slate-700 text-center animate-zoom-in mt-10">
+                <div className="flex justify-center mb-6">
+                  <div className="bg-emerald-500/20 p-4 rounded-full text-emerald-400">
+                    <IconCheck size={60} />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Terima Kasih!</h2>
+                <p className="text-slate-400 mb-6">Suara Anda telah berhasil dicatat ke dalam sistem. Kode <b>{uniqueCode}</b> kini tidak dapat digunakan lagi.</p>
+                <div className="bg-slate-700 p-4 rounded-xl text-sm text-slate-300">
+                  Silakan kembali menikmati jalannya acara.
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
