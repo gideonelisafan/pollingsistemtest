@@ -1,173 +1,1045 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Soal Praktik C++</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Visualisator Eksekusi C++</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#EAF2F8; --grid:#0d2a4512; --panel:#FFFFFF; --border:#0d2a4524; --ink:#0E2A47; --soft:#4A6C87;
+  --accent:#C9690A; --accent-soft:#C9690A22; --accent-ink:#231300;
+  --console-bg:#0E2A47; --console-text:#8FE3C2;
+  --error:#B3261E; --error-soft:#B3261E14;
+  --kw:#5B3A8E; --ty:#0E7C86; --st:#1E7A4C; --cm:#6B7F93; --nu:#B4532A; --pp:#7A8CA3;
+}
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B2238; --grid:#ffffff0d; --panel:#123A5E; --border:#ffffff1c; --ink:#EAF2FA; --soft:#8FAFC9;
+    --accent:#F2A541; --accent-soft:#F2A54126; --accent-ink:#231300;
+    --console-bg:#07192C; --console-text:#7CE8C4;
+    --error:#FF6B5D; --error-soft:#FF6B5D1f;
+    --kw:#C792EA; --ty:#4FD6D0; --st:#8FE3A3; --cm:#7A93AE; --nu:#FFB37A; --pp:#8FAFC9;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B2238; --grid:#ffffff0d; --panel:#123A5E; --border:#ffffff1c; --ink:#EAF2FA; --soft:#8FAFC9;
+  --accent:#F2A541; --accent-soft:#F2A54126; --accent-ink:#231300;
+  --console-bg:#07192C; --console-text:#7CE8C4;
+  --error:#FF6B5D; --error-soft:#FF6B5D1f;
+  --kw:#C792EA; --ty:#4FD6D0; --st:#8FE3A3; --cm:#7A93AE; --nu:#FFB37A; --pp:#8FAFC9;
+}
+*{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',sans-serif;
+  background-image:repeating-linear-gradient(0deg,var(--grid) 0 1px,transparent 1px 42px),repeating-linear-gradient(90deg,var(--grid) 0 1px,transparent 1px 42px);}
+.page{max-width:1160px;margin:0 auto;padding:28px 20px 64px;}
+header h1{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:clamp(24px,4vw,32px);letter-spacing:-0.01em;margin:0 0 6px;}
+header .sub{margin:0 0 22px;color:var(--soft);font-size:15px;max-width:62ch;line-height:1.5;}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px;}
+select,input[type=text]{font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;padding:9px 10px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--ink);}
+.inputlabel{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--soft);}
+.btn{font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:13.5px;padding:10px 16px;border-radius:6px;border:1px solid var(--border);background:var(--panel);color:var(--ink);cursor:pointer;}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;}
+.btn:hover{filter:brightness(.97);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.errorbox{background:var(--error-soft);border:1px solid var(--error);color:var(--error);border-radius:8px;padding:10px 14px;font-size:13.5px;margin-bottom:14px;}
+.workspace{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start;}
+@media (max-width:760px){.workspace{grid-template-columns:1fr;}}
+.panel{position:relative;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.panel::before,.panel::after{content:'';position:absolute;width:10px;height:10px;opacity:.6;}
+.panel::before{top:-1px;left:-1px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);}
+.panel::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);}
+.panelhead{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12.5px;color:var(--soft);margin-bottom:10px;}
+.panelhead.row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.backdrop{position:fixed;inset:0;background:rgba(8,16,26,.55);z-index:40;}
+.panel.maximized{position:fixed;top:max(14px,env(safe-area-inset-top,0px));right:14px;bottom:max(14px,env(safe-area-inset-bottom,0px));left:14px;z-index:50;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.panel.maximized .consolebox{flex:1;display:flex;flex-direction:column;min-height:0;}
+.panel.maximized .output{flex:1;max-height:none;font-size:15px;}
+.codepanel textarea{width:100%;min-height:360px;resize:vertical;font-family:'IBM Plex Mono',monospace;font-size:14px;line-height:1.6;background:transparent;color:var(--ink);border:1px solid var(--border);border-radius:6px;padding:12px;}
+.codeview{max-height:480px;overflow:auto;font-family:'IBM Plex Mono',monospace;font-size:13.5px;line-height:1.65;border:1px solid var(--border);border-radius:6px;}
+.codeview .line{display:flex;white-space:pre;padding:0 10px;}
+.codeview .line .ln{width:2.4em;flex:none;color:var(--soft);opacity:.6;text-align:right;margin-right:12px;user-select:none;}
+.codeview .line.cur{background:var(--accent-soft);border-left:3px solid var(--accent);}
+.codeview .line.cur .src{color:var(--ink);font-weight:600;}
+.codeview .line.waiting{background:var(--accent-soft);border-left:3px dashed var(--accent);}
+.codeview .line.waiting .src{color:var(--ink);font-weight:600;}
+.tok-kw{color:var(--kw);font-weight:600;}
+.tok-ty{color:var(--ty);}
+.tok-st{color:var(--st);}
+.tok-cm{color:var(--cm);font-style:italic;}
+.tok-nu{color:var(--nu);}
+.tok-pp{color:var(--pp);}
+.side{display:flex;flex-direction:column;gap:16px;}
+.varstable{width:100%;border-collapse:collapse;font-size:13px;}
+.varstable td{padding:6px 4px;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;word-break:break-word;}
+.varstable td.tcol{color:var(--soft);font-size:11.5px;}
+.varstable td.empty{color:var(--soft);font-family:'IBM Plex Sans',sans-serif;font-style:italic;}
+tr.flash td{animation:flash .9s ease;}
+@keyframes flash{0%{background:var(--accent-soft);}100%{background:transparent;}}
+.stacklist{margin:0;padding-left:18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+.stacklist li.top{color:var(--accent);font-weight:600;}
+.consolebox{position:relative;background:var(--console-bg);border-radius:6px;overflow:hidden;}
+.consolebox.waiting{cursor:text;}
+.output{background:transparent;color:var(--console-text);padding:12px;font-family:'IBM Plex Mono',monospace;font-size:13px;min-height:78px;max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:0;}
+.output .cursor{display:inline-block;color:var(--accent);animation:blink 1s step-start infinite;}
+@keyframes blink{50%{opacity:0;}}
+.hiddeninput{position:absolute;opacity:0;width:1px;height:1px;padding:0;margin:0;border:0;pointer-events:none;}
+.btn.tiny{padding:5px 10px;font-size:12px;border-color:var(--accent);color:var(--accent);background:transparent;}
+.btn.active{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600;}
+.badge{display:inline-block;background:var(--error);color:#fff;border-radius:999px;min-width:18px;padding:1px 6px;font-size:11px;text-align:center;font-family:'IBM Plex Mono',monospace;}
+.violationlist{list-style:none;margin:0;padding:0;font-size:12.5px;max-height:170px;overflow:auto;display:flex;flex-direction:column;gap:6px;}
+.violationlist li{border-left:3px solid var(--error);background:var(--error-soft);padding:5px 8px;border-radius:4px;}
+.violationlist li.info{border-left-color:var(--accent);background:var(--accent-soft);}
+.violationlist li.empty{border-left-color:var(--border);background:transparent;color:var(--soft);font-style:italic;}
+.vtime{color:var(--soft);font-family:'IBM Plex Mono',monospace;margin-right:6px;font-size:11px;}
+.examwarn{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:var(--accent-soft);border:1px solid var(--accent);color:var(--ink);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;}
+.examwarn.urgent{background:var(--error-soft);border-color:var(--error);}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--error);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:90;box-shadow:0 8px 24px rgba(0,0,0,.35);max-width:90vw;text-align:center;}
+.transport{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;}
+.transport input[type=range]{flex:1;min-width:140px;}
+.status{font-size:12.5px;color:var(--soft);font-family:'IBM Plex Mono',monospace;}
+.note{margin-top:22px;font-size:12.5px;color:var(--soft);line-height:1.6;max-width:72ch;}
+</style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl">
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">Generator Soal Praktik C++</h1>
-        <p class="text-gray-600 text-center mb-8">Masukkan data diri untuk mendapatkan soal praktik Anda.</p>
+<body>
+<div class="page">
+  <header>
+    <h1>Visualisator Eksekusi C++</h1>
+    <p class="sub">Tulis kode C++, jalankan baris demi baris, dan amati bagaimana variabel serta keluarannya berubah di setiap langkah.</p>
+  </header>
 
-        <div id="inputForm" class="space-y-6">
-            <div>
-                <label for="namaSiswa" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                <input type="text" id="namaSiswa" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Contoh: Budi Santoso" required>
-            </div>
-            
-            <div>
-                <label for="noAbsen" class="block text-sm font-medium text-gray-700 mb-1">Nomor Absen (1-42)</label>
-                <input type="number" id="noAbsen" min="1" max="42" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" placeholder="Contoh: 15" required>
-            </div>
+  <section class="toolbar">
+    <label class="inputlabel">Contoh
+      <select id="exampleSel" aria-label="Contoh kode">
+        <option value="">Pilih contoh…</option>
+        <option value="bubble">Urutkan gelembung (array)</option>
+        <option value="factorial">Faktorial (rekursi)</option>
+        <option value="fizzbuzz">FizzBuzz (if/for)</option>
+      </select>
+    </label>
+    <button id="runBtn" class="btn primary">Jalankan &amp; visualisasikan</button>
+    <button id="editBtn" class="btn ghost" hidden>Edit kode</button>
+    <button id="examToggleBtn" type="button" class="btn ghost examtoggle">Mode Ujian: Nonaktif</button>
+  </section>
 
-            <button id="generateBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 ease-in-out transform hover:-translate-y-1 shadow-md">
-                Generate Soal
-            </button>
-            <p id="errorMessage" class="text-red-500 text-sm text-center hidden">Silakan isi Nama Lengkap dan Nomor Absen yang valid (1-42).</p>
-        </div>
+  <div id="examWarnBar" class="examwarn" hidden>
+    <span id="examWarnText">⚠ Mode Ujian aktif — disarankan gunakan mode layar penuh.</span>
+    <button id="enterFsBtn" type="button" class="btn tiny">Masuk layar penuh</button>
+  </div>
 
-        <div id="resultArea" class="hidden mt-8">
-            <div class="border-b border-gray-200 pb-4 mb-6">
-                <h2 class="text-xl font-semibold text-gray-800">Soal Praktik untuk:</h2>
-                <p id="displayNama" class="text-lg text-blue-600 font-medium"></p>
-                <p class="text-sm text-gray-500">Nomor Absen: <span id="displayAbsen"></span></p>
-            </div>
+  <div id="errorBox" class="errorbox" hidden></div>
 
-            <div class="space-y-6">
-                <!-- Soal 1 -->
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                    <h3 class="font-bold text-gray-800 mb-2">Soal 1: Input/Output Dasar</h3>
-                    <p id="soal1" class="text-gray-700 leading-relaxed"></p>
-                </div>
-
-                <!-- Soal 2 -->
-                <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                    <h3 class="font-bold text-gray-800 mb-2">Soal 2: Operasi Aritmatika</h3>
-                    <p id="soal2" class="text-gray-700 leading-relaxed"></p>
-                </div>
-            </div>
-
-            <button id="resetBtn" class="mt-8 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200">
-                Kembali
-            </button>
-        </div>
+  <div class="workspace">
+    <div class="panel codepanel">
+      <div class="panelhead row">
+        <span>Kode</span>
+        <button id="syntaxBtn" type="button" class="btn tiny">Warna sintaks: Nonaktif</button>
+      </div>
+      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div id="codeView" class="codeview" hidden></div>
     </div>
+    <div class="side">
+      <div class="panel">
+        <div class="panelhead">Variabel</div>
+        <table class="varstable"><tbody id="varsBody"><tr><td class="empty" colspan="3">Belum dijalankan</td></tr></tbody></table>
+      </div>
+      <div class="panel" id="stackPanel" hidden>
+        <div class="panelhead">Tumpukan pemanggilan</div>
+        <ol id="stackList" class="stacklist"></ol>
+      </div>
+      <div class="panel" id="violationPanel" hidden>
+        <div class="panelhead row"><span>Log pelanggaran</span><span id="violationCount" class="badge">0</span></div>
+        <ul id="violationList" class="violationlist"><li class="empty">Tidak ada aktivitas tercatat.</li></ul>
+      </div>
+      <div class="panel" id="outputPanel">
+        <div class="panelhead row">
+          <span>Output program</span>
+          <button id="maxBtn" type="button" class="btn tiny">⛶ Layar penuh</button>
+        </div>
+        <div class="consolebox" id="consoleBox">
+          <pre id="outputPre" class="output"></pre>
+          <input id="liveInput" class="hiddeninput" type="text" autocomplete="off" aria-label="Input program">
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const generateBtn = document.getElementById('generateBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const namaInput = document.getElementById('namaSiswa');
-            const absenInput = document.getElementById('noAbsen');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            const inputForm = document.getElementById('inputForm');
-            const resultArea = document.getElementById('resultArea');
-            
-            const displayNama = document.getElementById('displayNama');
-            const displayAbsen = document.getElementById('displayAbsen');
-            const soal1El = document.getElementById('soal1');
-            const soal2El = document.getElementById('soal2');
+  <div id="transport" class="transport" hidden>
+    <button id="resetBtn" class="btn ghost" title="Atur ulang">⟲ Atur ulang</button>
+    <button id="prevBtn" class="btn ghost" title="Langkah sebelumnya">◀</button>
+    <button id="playBtn" class="btn primary">▶ Putar otomatis</button>
+    <button id="nextBtn" class="btn ghost" title="Langkah berikutnya">▶</button>
+    <input id="slider" type="range" min="0" max="0" value="0" aria-label="Posisi langkah">
+    <select id="speedSel" aria-label="Kecepatan putar">
+      <option value="700">Lambat</option>
+      <option value="350" selected>Sedang</option>
+      <option value="120">Cepat</option>
+    </select>
+    <span id="statusLine" class="status"></span>
+  </div>
 
-            const variasiSapaan = [
-                "halo {nama}, selamat belajar!",
-                "Selamat pagi {nama}, mari kita mulai coding!",
-                "Hai {nama}, semoga harimu menyenangkan!",
-                "Program C++ pertama oleh {nama}.",
-                "Welcome {nama} ke dunia pemrograman!",
-                "Salam kenal {nama}, terus semangat belajar!",
-                "Halo {nama}, bersiaplah menjadi programmer handal!"
-            ];
+  <div id="backdrop" class="backdrop" hidden></div>
+  <div id="toast" class="toast" hidden></div>
 
-            const variasiAritmatika = [
-                "menghitung sisa kembalian dari pembelian barang. Program meminta input total harga barang dan jumlah uang yang dibayarkan, lalu menampilkan sisa kembaliannya.",
-                "menghitung luas persegi panjang. Program meminta input panjang dan lebar (dalam bilangan bulat), lalu menampilkan hasil luasnya.",
-                "menghitung total gaji. Program meminta input gaji pokok dan bonus (dalam bilangan bulat), lalu menampilkan total gaji keseluruhan.",
-                "menghitung keliling segitiga. Program meminta input panjang dari 3 sisi segitiga, lalu menampilkan hasil kelilingnya.",
-                "menghitung rata-rata dari 2 buah nilai ujian. Program meminta input nilai ujian pertama dan kedua, lalu menampilkan nilai rata-ratanya (gunakan tipe data float/double jika perlu).",
-                "menghitung selisih umur. Program meminta input umur kakak dan umur adik, lalu menampilkan selisih umur mereka.",
-                "menghitung harga diskon. Program meminta input harga awal (misal 100000) dan besaran diskon dalam persentase (misal 10), lalu hitung dan tampilkan harga setelah diskon (hint: diskon tetap, bukan float kompleks)."
-            ];
+  <p class="note">Mendukung: variabel (int/double/float/char/bool/string), array &amp; vector satu dimensi, fungsi termasuk rekursi, if/for/while/do-while, serta cout/cin. Belum mendukung class, pointer, template, dan sebagian besar pustaka STL.</p>
+</div>
 
-            // Fungsi pseudo-random sederhana berbasis seed
-            function pseudoRandom(seed) {
-                let x = Math.sin(seed++) * 10000;
-                return x - Math.floor(x);
+<script>
+"use strict";
+/* ===== interpreter ===== */
+const CppInterp=(function(){
+class CErr extends Error{ constructor(msg,ln){ super(msg); this.ln=ln; this.kind='Sintaks'; } }
+class RErr extends Error{ constructor(msg,ln){ super(msg); this.ln=ln; this.kind='Eksekusi'; } }
+class NeedInput extends Error{ constructor(ln){ super('perlu input'); this.ln=ln; } }
+function stripAndMark(src){
+  let out=''; let i=0, n=src.length;
+  while(i<n){
+    const c=src[i];
+    if(c==='/' && src[i+1]==='/'){ while(i<n && src[i]!=='\n'){ out+=' '; i++; } continue; }
+    if(c==='/' && src[i+1]==='*'){
+      out+='  '; i+=2;
+      while(i<n && !(src[i]==='*'&&src[i+1]==='/')){ out+= (src[i]==='\n')?'\n':' '; i++; }
+      if(i<n){ out+='  '; i+=2; }
+      continue;
+    }
+    if(c==='"'){ out+=c; i++; while(i<n && src[i]!=='"'){ if(src[i]==='\\'){ out+=src[i]+src[i+1]; i+=2; continue; } out+=src[i]; i++; } if(i<n){ out+='"'; i++; } continue; }
+    if(c==="'"){ out+=c; i++; while(i<n && src[i]!=="'"){ if(src[i]==='\\'){ out+=src[i]+src[i+1]; i+=2; continue; } out+=src[i]; i++; } if(i<n){ out+="'"; i++; } continue; }
+    out+=c; i++;
+  }
+  out=out.split('\n').map(line=>{
+    const t=line.trim();
+    if(t.startsWith('#')) return '';
+    if(/^using\s+namespace\s+\w+\s*;?\s*$/.test(t)) return '';
+    return line;
+  }).join('\n');
+  return out;
+}
+function unesc(c){ return ({n:'\n',t:'\t',r:'\r','\\':'\\','"':'"',"'":"'",'0':'\0'})[c] ?? c; }
+function lex(src){
+  const toks=[]; let i=0, n=src.length, ln=1;
+  const isD=c=>c>='0'&&c<='9';
+  const isA=c=>/[A-Za-z_]/.test(c);
+  const isAN=c=>/[A-Za-z0-9_]/.test(c);
+  const two=['==','!=','<=','>=','&&','||','++','--','+=','-=','*=','/=','%=','<<','>>'];
+  while(i<n){
+    const c=src[i];
+    if(c==='\n'){ ln++; i++; continue; }
+    if(c===' '||c==='\t'||c==='\r'){ i++; continue; }
+    if(isD(c) || (c==='.'&&isD(src[i+1]))){
+      let j=i;
+      while(j<n && isD(src[j])) j++;
+      if(src[j]==='.'){ j++; while(j<n&&isD(src[j])) j++; }
+      if(src[j]==='f'||src[j]==='F'){ j++; }
+      let raw=src.slice(i,j).replace(/[fF]$/,'');
+      toks.push({t:'NUM', v:parseFloat(raw), isInt: !raw.includes('.'), ln}); i=j; continue;
+    }
+    if(c==='"'){ let j=i+1,s=''; while(j<n&&src[j]!=='"'){ if(src[j]==='\\'){ s+=unesc(src[j+1]); j+=2; } else { s+=src[j]; j++; } } toks.push({t:'STR',v:s,ln}); i=j+1; continue; }
+    if(c==="'"){ let j=i+1,s=''; while(j<n&&src[j]!=="'"){ if(src[j]==='\\'){ s+=unesc(src[j+1]); j+=2; } else { s+=src[j]; j++; } } toks.push({t:'CHAR',v:s,ln}); i=j+1; continue; }
+    if(isA(c)){ let j=i; while(j<n&&isAN(src[j])) j++; toks.push({t:'ID',v:src.slice(i,j),ln}); i=j; continue; }
+    const tw=src.slice(i,i+2);
+    if(two.includes(tw)){ toks.push({t:tw,v:tw,ln}); i+=2; continue; }
+    if('+-*/%=<>!(){}[];,.?:&|'.includes(c)){ toks.push({t:c,v:c,ln}); i++; continue; }
+    i++;
+  }
+  toks.push({t:'EOF',v:null,ln});
+  return toks;
+}
+const TYPEWORDS=new Set(['int','float','double','char','bool','string','void','long','short','unsigned']);
+function parse(toks){
+  let p=0;
+  const peek=(k=0)=>toks[p+k];
+  const at=t=>peek().t===t;
+  const eat=t=>{ if(!at(t)) throw new CErr(`Diharapkan '${t}' tapi mendapat '${peek().v??peek().t}'`, peek().ln); return toks[p++]; };
+  const eatIf=t=>{ if(at(t)) return toks[p++]; return null; };
+  function isTypeStart(){ return at('ID') && (TYPEWORDS.has(peek().v) || peek().v==='vector'); }
+  function parseType(){
+    if(at('ID')&&peek().v==='vector'){ eat('ID'); eat('<'); const inner=parseType(); eat('>'); return {base:'vector', of:inner}; }
+    const words=[];
+    while(at('ID') && TYPEWORDS.has(peek().v)) words.push(toks[p++].v);
+    if(!words.length) throw new CErr('Tipe data diharapkan', peek().ln);
+    let base='int';
+    if(words.includes('double')) base='double';
+    else if(words.includes('float')) base='float';
+    else if(words.includes('char')) base='char';
+    else if(words.includes('bool')) base='bool';
+    else if(words.includes('string')) base='string';
+    else if(words.includes('void')) base='void';
+    return {base};
+  }
+  function parseProgram(){
+    const funcs={};
+    while(!at('EOF')){
+      const type=parseType();
+      const name=eat('ID').v;
+      eat('(');
+      const params=[];
+      if(!at(')')){
+        do{
+          const pt=parseType();
+          const pname=eat('ID').v;
+          if(eatIf('[')) eat(']');
+          params.push({type:pt,name:pname});
+        } while(eatIf(','));
+      }
+      eat(')');
+      const body=parseBlock();
+      funcs[name]={name,ret:type,params,body,ln:body.ln};
+    }
+    return funcs;
+  }
+  function parseBlock(){ const ln=peek().ln; eat('{'); const stmts=[]; while(!at('}')) stmts.push(parseStmt()); eat('}'); return {k:'block',stmts,ln}; }
+  function parseStmt(){
+    const tk=peek();
+    if(tk.t==='{') return parseBlock();
+    if(tk.t==='ID'&&tk.v==='if') return parseIf();
+    if(tk.t==='ID'&&tk.v==='for') return parseFor();
+    if(tk.t==='ID'&&tk.v==='while') return parseWhile();
+    if(tk.t==='ID'&&tk.v==='do') return parseDoWhile();
+    if(tk.t==='ID'&&tk.v==='return'){ const ln=tk.ln; p++; let e=null; if(!at(';')) e=parseExpr(); eat(';'); return {k:'return',e,ln}; }
+    if(tk.t==='ID'&&tk.v==='break'){ p++; eat(';'); return {k:'break',ln:tk.ln}; }
+    if(tk.t==='ID'&&tk.v==='continue'){ p++; eat(';'); return {k:'continue',ln:tk.ln}; }
+    if(tk.t==='ID'&&tk.v==='cout') return parseCout();
+    if(tk.t==='ID'&&tk.v==='cin') return parseCin();
+    if(isTypeStart()) return parseVarDecl();
+    const ln=tk.ln; const e=parseExpr(); eat(';'); return {k:'exprstmt',e,ln};
+  }
+  function parseVarDecl(){
+    const ln=peek().ln; const type=parseType(); const decls=[];
+    do{
+      const name=eat('ID').v;
+      const d={name,isArr:false,sizeExpr:null,init:null,initList:null,ctorArgs:null};
+      if(type.base==='vector' && eatIf('(')){ d.ctorArgs = at(')')?[]:parseExprList2(); eat(')'); }
+      else if(eatIf('[')){ d.isArr=true; d.sizeExpr = at(']')?null:parseExpr(); eat(']'); if(eatIf('=')){ eat('{'); d.initList=parseExprList(); eat('}'); } }
+      else if(eatIf('=')){ if(at('{')){ eat('{'); d.initList=parseExprList(); eat('}'); } else d.init=parseExpr(); }
+      else if(at('{')){ eat('{'); d.initList=parseExprList(); eat('}'); }
+      decls.push(d);
+    } while(eatIf(','));
+    eat(';');
+    return {k:'vardecl',type,decls,ln};
+  }
+  function parseExprList(){ const l=[]; if(!at('}')){ do{ l.push(parseExpr()); } while(eatIf(',')); } return l; }
+  function parseExprList2(){ const l=[parseExpr()]; while(eatIf(',')) l.push(parseExpr()); return l; }
+  function parseIf(){ const ln=peek().ln; p++; eat('('); const cond=parseExpr(); eat(')'); const then=parseStmt(); let els=null; if(at('ID')&&peek().v==='else'){ p++; els=parseStmt(); } return {k:'if',cond,then,els,ln}; }
+  function parseFor(){
+    const ln=peek().ln; p++; eat('(');
+    let init=null;
+    if(!at(';')) init = isTypeStart()? parseVarDeclNoSemi() : {k:'exprstmt',e:parseExpr(),ln:peek().ln};
+    eat(';');
+    let cond=null; if(!at(';')) cond=parseExpr(); eat(';');
+    let step=null; if(!at(')')) step=parseExpr(); eat(')');
+    const body=parseStmt();
+    return {k:'for',init,cond,step,body,ln};
+  }
+  function parseVarDeclNoSemi(){
+    const ln=peek().ln; const type=parseType(); const decls=[];
+    do{ const name=eat('ID').v; let init=null; if(eatIf('=')) init=parseExpr(); decls.push({name,isArr:false,sizeExpr:null,init,initList:null,ctorArgs:null}); } while(eatIf(','));
+    return {k:'vardecl',type,decls,ln};
+  }
+  function parseWhile(){ const ln=peek().ln; p++; eat('('); const cond=parseExpr(); eat(')'); const body=parseStmt(); return {k:'while',cond,body,ln}; }
+  function parseDoWhile(){ const ln=peek().ln; p++; const body=parseStmt(); eat('ID'); eat('('); const cond=parseExpr(); eat(')'); eat(';'); return {k:'dowhile',cond,body,ln}; }
+  function parseCout(){ const ln=peek().ln; p++; const parts=[]; while(eatIf('<<')) parts.push(parseTernary()); eat(';'); return {k:'cout',parts,ln}; }
+  function parseCin(){ const ln=peek().ln; p++; const parts=[]; while(eatIf('>>')) parts.push(parseTernary()); eat(';'); return {k:'cin',parts,ln}; }
+  function parseExpr(){ return parseAssign(); }
+  function parseAssign(){
+    const left=parseTernary();
+    if(['=','+=','-=','*=','/=','%='].includes(peek().t)){ const op=toks[p++].t; const right=parseAssign(); return {k:'assign',op,target:left,value:right,ln:left.ln}; }
+    return left;
+  }
+  function parseTernary(){ const c=parseLogicOr(); if(eatIf('?')){ const a=parseExpr(); eat(':'); const b=parseAssign(); return {k:'ternary',c,a,b,ln:c.ln}; } return c; }
+  function parseLogicOr(){ let l=parseLogicAnd(); while(eatIf('||')){ const r=parseLogicAnd(); l={k:'bin',op:'||',l,r,ln:l.ln}; } return l; }
+  function parseLogicAnd(){ let l=parseEquality(); while(eatIf('&&')){ const r=parseEquality(); l={k:'bin',op:'&&',l,r,ln:l.ln}; } return l; }
+  function parseEquality(){ let l=parseRel(); while(at('==')||at('!=')){ const op=toks[p++].t; const r=parseRel(); l={k:'bin',op,l,r,ln:l.ln}; } return l; }
+  function parseRel(){ let l=parseAdd(); while(['<','>','<=','>='].includes(peek().t)){ const op=toks[p++].t; const r=parseAdd(); l={k:'bin',op,l,r,ln:l.ln}; } return l; }
+  function parseAdd(){ let l=parseMul(); while(at('+')||at('-')){ const op=toks[p++].t; const r=parseMul(); l={k:'bin',op,l,r,ln:l.ln}; } return l; }
+  function parseMul(){ let l=parseUnary(); while(at('*')||at('/')||at('%')){ const op=toks[p++].t; const r=parseUnary(); l={k:'bin',op,l,r,ln:l.ln}; } return l; }
+  function parseUnary(){
+    if(at('!')||at('-')||at('+')){ const op=toks[p++].t; const e=parseUnary(); return {k:'unary',op,e,ln:e.ln}; }
+    if(at('++')||at('--')){ const op=toks[p++].t; const e=parseUnary(); return {k:'preinc',op,e,ln:e.ln}; }
+    return parsePostfix();
+  }
+  function parsePostfix(){
+    let e=parsePrimary();
+    for(;;){
+      if(eatIf('[')){ const idx=parseExpr(); eat(']'); e={k:'index',obj:e,idx,ln:e.ln}; continue; }
+      if(eatIf('.')){ const name=eat('ID').v; eat('('); const args=at(')')?[]:parseExprList2(); eat(')'); e={k:'method',obj:e,name,args,ln:e.ln}; continue; }
+      if(eatIf('(')){ const args=at(')')?[]:parseExprList2(); eat(')'); e={k:'call',name:e.name,args,ln:e.ln}; continue; }
+      if(at('++')||at('--')){ const op=toks[p++].t; e={k:'postinc',op,e,ln:e.ln}; continue; }
+      break;
+    }
+    return e;
+  }
+  function parsePrimary(){
+    const tk=peek();
+    if(tk.t==='NUM'){ p++; return {k:'num',v:tk.v,isInt:tk.isInt,ln:tk.ln}; }
+    if(tk.t==='STR'){ p++; return {k:'str',v:tk.v,ln:tk.ln}; }
+    if(tk.t==='CHAR'){ p++; return {k:'chr',v:tk.v,ln:tk.ln}; }
+    if(tk.t==='('){ p++; const e=parseExpr(); eat(')'); return e; }
+    if(tk.t==='ID'){
+      p++;
+      if(tk.v==='true') return {k:'bool',v:true,ln:tk.ln};
+      if(tk.v==='false') return {k:'bool',v:false,ln:tk.ln};
+      if(tk.v==='endl') return {k:'endl',ln:tk.ln};
+      return {k:'id',name:tk.v,ln:tk.ln};
+    }
+    throw new CErr(`Token tak terduga '${tk.v??tk.t}'`, tk.ln);
+  }
+  const funcs=parseProgram();
+  return funcs;
+}
+const STEP_LIMIT=4000, CALL_LIMIT=200;
+let funcs, callStack, trace, output, stepCount, lastChanged, inputQueue, inputPos;
+function isIntType(t){ return t==='int'||t==='char'||t==='bool'; }
+function numOf(v){ if(v.type==='char') return v.value.charCodeAt(0)||0; if(v.type==='bool') return v.value?1:0; if(v.type==='string') return parseFloat(v.value)||0; return v.value; }
+function truthy(v){ if(v.type==='bool') return v.value; if(v.type==='string') return v.value.length>0; return numOf(v)!==0; }
+function formatNum(v){ if(Number.isInteger(v)) return String(v); let s=v.toFixed(6).replace(/0+$/,'').replace(/\.$/,''); return s; }
+function coutStr(v){
+  if(v.type==='bool') return v.value?'1':'0';
+  if(v.type==='char') return v.value;
+  if(v.type==='string') return v.value;
+  if(v.type==='int') return String(v.value);
+  if(v.type==='double'||v.type==='float') return formatNum(v.value);
+  if(v.type==='array'||v.type==='vector') return '['+v.value.map(x=>typeof x==='number'?formatNum(x):x).join(', ')+']';
+  return String(v.value);
+}
+function defaultOf(type){ if(type==='int'||type==='double'||type==='float') return 0; if(type==='bool') return false; if(type==='char') return '\0'; if(type==='string') return ''; return 0; }
+function coerce(val,type){
+  if(type==='int') return Math.trunc(numOf(val))|0;
+  if(type==='double'||type==='float') return numOf(val);
+  if(type==='bool') return truthy(val);
+  if(type==='char'){
+    if(val.type==='char') return val.value;
+    if(val.type==='string') return val.value[0]||'\0';
+    return String.fromCharCode(((Math.trunc(numOf(val))%256)+256)%256);
+  }
+  if(type==='string') return coutStr(val);
+  return val.value;
+}
+function mk(v,bothInt){ return bothInt? {type:'int',value:Math.trunc(v)} : {type:'double',value:v}; }
+function evalBin(op,l,r,ln){
+  if(op==='+' && (l.type==='string'||r.type==='string')) return {type:'string', value: coutStr(l)+coutStr(r)};
+  const a=numOf(l), b=numOf(r), bothInt=isIntType(l.type)&&isIntType(r.type);
+  switch(op){
+    case '+': return mk(a+b,bothInt);
+    case '-': return mk(a-b,bothInt);
+    case '*': return mk(a*b,bothInt);
+    case '/': if(b===0) throw new RErr('Pembagian dengan nol', ln); return bothInt? {type:'int',value:Math.trunc(a/b)} : {type:'double',value:a/b};
+    case '%': if(Math.trunc(b)===0) throw new RErr('Modulo dengan nol', ln); return {type:bothInt?'int':'double', value: bothInt?(Math.trunc(a)%Math.trunc(b)):(a%b)};
+    case '<': return {type:'bool',value:a<b};
+    case '>': return {type:'bool',value:a>b};
+    case '<=': return {type:'bool',value:a<=b};
+    case '>=': return {type:'bool',value:a>=b};
+    case '==': return {type:'bool', value:(l.type==='string'&&r.type==='string')? l.value===r.value : a===b};
+    case '!=': return {type:'bool', value:(l.type==='string'&&r.type==='string')? l.value!==r.value : a!==b};
+  }
+  throw new RErr('Operator tak dikenal '+op, ln);
+}
+function findVar(name,frame){ for(let i=frame.scopes.length-1;i>=0;i--){ if(frame.scopes[i].has(name)) return frame.scopes[i].get(name); } return null; }
+function lvName(node){ return node.k==='id'?node.name:(node.k==='index'?lvName(node.obj):null); }
+function resolveArrRec(node,frame){
+  if(node.k!=='id') throw new RErr('Diharapkan nama array/vector', node.ln);
+  const rec=findVar(node.name,frame);
+  if(!rec||(rec.type!=='array'&&rec.type!=='vector')) throw new RErr(`'${node.name}' bukan array/vector`, node.ln);
+  return rec;
+}
+function resolveLValue(node,frame){
+  if(node.k==='id'){
+    const rec=findVar(node.name,frame);
+    if(!rec) throw new RErr(`Variabel '${node.name}' tidak dikenal`, node.ln);
+    return {type:rec.type, get:()=>({type:rec.type,value:rec.value}), set:(v)=>{ rec.value=coerce(v,rec.type); }};
+  }
+  if(node.k==='index'){
+    const rec=resolveArrRec(node.obj,frame);
+    const idx=Math.trunc(numOf(evalExpr(node.idx,frame)));
+    if(idx<0||idx>=rec.value.length) throw new RErr(`Indeks ${idx} di luar batas (ukuran ${rec.value.length})`, node.ln);
+    return {type:rec.elemType, get:()=>({type:rec.elemType,value:rec.value[idx]}), set:(v)=>{ rec.value[idx]=coerce(v,rec.elemType); }};
+  }
+  throw new RErr('Target penugasan tidak valid', node.ln);
+}
+const BUILTIN=new Set(['abs','min','max','sqrt','pow','to_string']);
+function callBuiltin(name,args){
+  const a=args.map(numOf);
+  switch(name){
+    case 'abs': return {type: args[0].type==='int'?'int':'double', value: Math.abs(a[0])};
+    case 'min': return a[0]<a[1]?args[0]:args[1];
+    case 'max': return a[0]>a[1]?args[0]:args[1];
+    case 'sqrt': return {type:'double',value:Math.sqrt(a[0])};
+    case 'pow': return {type:'double',value:Math.pow(a[0],a[1])};
+    case 'to_string': return {type:'string',value:coutStr(args[0])};
+  }
+}
+function callFunc(name,args,ln){
+  if(BUILTIN.has(name)) return callBuiltin(name,args);
+  const fn=funcs[name];
+  if(!fn) throw new RErr(`Fungsi '${name}' tidak dikenal`, ln);
+  if(callStack.length>=CALL_LIMIT) throw new RErr(`Kedalaman rekursi melebihi ${CALL_LIMIT} (kemungkinan rekursi tak berhenti).`, ln);
+  const scope=new Map();
+  fn.params.forEach((pm,i)=>{ const a=args[i] ?? {type:pm.type.base,value:defaultOf(pm.type.base)}; scope.set(pm.name,{type:pm.type.base,value:coerce(a,pm.type.base)}); });
+  const newFrame={name,scopes:[scope]};
+  callStack.push(newFrame);
+  snapshot(fn.ln);
+  const sig=execBlock(fn.body,newFrame);
+  callStack.pop();
+  lastChanged=null;
+  if(sig && sig.type==='return') return sig.value;
+  return {type: fn.ret.base==='void'?'void':fn.ret.base, value: defaultOf(fn.ret.base)};
+}
+function evalExpr(node,frame){
+  switch(node.k){
+    case 'num': return {type: node.isInt?'int':'double', value: node.v};
+    case 'str': return {type:'string', value:node.v};
+    case 'chr': return {type:'char', value:node.v};
+    case 'bool': return {type:'bool', value:node.v};
+    case 'endl': return {type:'string', value:'\n'};
+    case 'id': { const rec=findVar(node.name,frame); if(!rec) throw new RErr(`Variabel '${node.name}' tidak dikenal`, node.ln); return {type:rec.type, value:rec.value, elemType:rec.elemType}; }
+    case 'index': { const rec=resolveArrRec(node.obj,frame); const idx=Math.trunc(numOf(evalExpr(node.idx,frame))); if(idx<0||idx>=rec.value.length) throw new RErr(`Indeks ${idx} di luar batas (ukuran ${rec.value.length})`, node.ln); return {type:rec.elemType, value:rec.value[idx]}; }
+    case 'assign': {
+      const lv=resolveLValue(node.target,frame);
+      let newVal;
+      if(node.op==='='){ newVal=evalExpr(node.value,frame); }
+      else { const cur=lv.get(); const rhs=evalExpr(node.value,frame); newVal=evalBin(node.op[0],cur,rhs,node.ln); }
+      lv.set(newVal);
+      lastChanged=lvName(node.target);
+      return lv.get();
+    }
+    case 'bin': {
+      if(node.op==='&&'){ const l=evalExpr(node.l,frame); if(!truthy(l)) return {type:'bool',value:false}; const r=evalExpr(node.r,frame); return {type:'bool',value:truthy(r)}; }
+      if(node.op==='||'){ const l=evalExpr(node.l,frame); if(truthy(l)) return {type:'bool',value:true}; const r=evalExpr(node.r,frame); return {type:'bool',value:truthy(r)}; }
+      const l=evalExpr(node.l,frame), r=evalExpr(node.r,frame);
+      return evalBin(node.op,l,r,node.ln);
+    }
+    case 'unary': {
+      const e=evalExpr(node.e,frame);
+      if(node.op==='!') return {type:'bool', value:!truthy(e)};
+      if(node.op==='-') return {type: isIntType(e.type)?'int':'double', value: -numOf(e)};
+      return {type: isIntType(e.type)?'int':e.type, value: numOf(e)};
+    }
+    case 'preinc': { const lv=resolveLValue(node.e,frame); const cur=lv.get(); const nv=evalBin(node.op==='++'?'+':'-',cur,{type:'int',value:1},node.ln); lv.set(nv); lastChanged=lvName(node.e); return lv.get(); }
+    case 'postinc': { const lv=resolveLValue(node.e,frame); const cur=lv.get(); const nv=evalBin(node.op==='++'?'+':'-',cur,{type:'int',value:1},node.ln); lv.set(nv); lastChanged=lvName(node.e); return cur; }
+    case 'ternary': { const c=evalExpr(node.c,frame); return truthy(c)?evalExpr(node.a,frame):evalExpr(node.b,frame); }
+    case 'method': {
+      const rec=resolveArrRec(node.obj,frame);
+      const args=node.args.map(a=>evalExpr(a,frame));
+      switch(node.name){
+        case 'push_back': rec.value.push(coerce(args[0],rec.elemType)); lastChanged=node.obj.name; return {type:'void'};
+        case 'pop_back': rec.value.pop(); lastChanged=node.obj.name; return {type:'void'};
+        case 'clear': rec.value.length=0; lastChanged=node.obj.name; return {type:'void'};
+        case 'size': return {type:'int', value:rec.value.length};
+        case 'empty': return {type:'bool', value:rec.value.length===0};
+        case 'at': { const i=Math.trunc(numOf(args[0])); if(i<0||i>=rec.value.length) throw new RErr('Indeks di luar batas', node.ln); return {type:rec.elemType, value:rec.value[i]}; }
+      }
+      throw new RErr(`Method '.${node.name}()' tidak didukung`, node.ln);
+    }
+    case 'call': return callFunc(node.name, node.args.map(a=>evalExpr(a,frame)), node.ln);
+  }
+  throw new RErr('Ekspresi tak dikenal', node.ln);
+}
+function declareVar(type,d,frame){
+  const scope=frame.scopes[frame.scopes.length-1];
+  if(type.base==='vector'){
+    const elemType=type.of.base; let arr=[];
+    if(d.ctorArgs){
+      const args=d.ctorArgs.map(a=>evalExpr(a,frame));
+      const size=args[0]?Math.trunc(numOf(args[0])):0;
+      const fillVal=coerce(args[1]!==undefined?args[1]:{type:elemType,value:defaultOf(elemType)}, elemType);
+      arr=new Array(size).fill(fillVal);
+    } else if(d.initList){ arr=d.initList.map(e=>coerce(evalExpr(e,frame),elemType)); }
+    scope.set(d.name,{type:'vector',elemType,value:arr}); lastChanged=d.name; return;
+  }
+  if(d.isArr){
+    const elemType=type.base;
+    const size=d.sizeExpr? Math.trunc(numOf(evalExpr(d.sizeExpr,frame))) : (d.initList?d.initList.length:0);
+    const arr=new Array(size).fill(defaultOf(elemType));
+    if(d.initList) d.initList.forEach((e,i)=>{ if(i<size) arr[i]=coerce(evalExpr(e,frame),elemType); });
+    scope.set(d.name,{type:'array',elemType,value:arr}); lastChanged=d.name; return;
+  }
+  let val;
+  if(d.init) val=coerce(evalExpr(d.init,frame),type.base);
+  else if(d.initList && d.initList.length) val=coerce(evalExpr(d.initList[0],frame),type.base);
+  else val=defaultOf(type.base);
+  scope.set(d.name,{type:type.base,value:val}); lastChanged=d.name;
+}
+function execBlock(block,frame){
+  frame.scopes.push(new Map());
+  let sig=null;
+  for(const st of block.stmts){ sig=execStmt(st,frame); if(sig) break; }
+  frame.scopes.pop();
+  return sig;
+}
+function nextInput(){ return inputPos<inputQueue.length? inputQueue[inputPos++] : null; }
+function parseInputFor(raw,type){
+  if(raw===null) return {type,value:defaultOf(type)};
+  if(type==='int') return {type:'int',value:parseInt(raw)||0};
+  if(type==='double'||type==='float') return {type,value:parseFloat(raw)||0};
+  if(type==='char') return {type:'char',value:raw[0]||'\0'};
+  if(type==='bool') return {type:'bool',value: raw==='1'||raw==='true'};
+  return {type:'string',value:raw};
+}
+function execStmt(node,frame){
+  switch(node.k){
+    case 'block': return execBlock(node,frame);
+    case 'vardecl': for(const d of node.decls) declareVar(node.type,d,frame); snapshot(node.ln); return null;
+    case 'exprstmt': evalExpr(node.e,frame); snapshot(node.ln); return null;
+    case 'if': { const c=evalExpr(node.cond,frame); snapshot(node.ln); if(truthy(c)) return execStmt(node.then,frame); else if(node.els) return execStmt(node.els,frame); return null; }
+    case 'while': {
+      while(true){
+        const c=evalExpr(node.cond,frame); snapshot(node.ln);
+        if(!truthy(c)) break;
+        const sig=execStmt(node.body,frame);
+        if(sig){ if(sig.type==='break') break; if(sig.type==='return') return sig; }
+      }
+      return null;
+    }
+    case 'dowhile': {
+      while(true){
+        const sig=execStmt(node.body,frame);
+        if(sig){ if(sig.type==='break') break; if(sig.type!=='continue') return sig; }
+        const c=evalExpr(node.cond,frame); snapshot(node.ln);
+        if(!truthy(c)) break;
+      }
+      return null;
+    }
+    case 'for': {
+      frame.scopes.push(new Map());
+      if(node.init){ if(node.init.k==='vardecl'){ for(const d of node.init.decls) declareVar(node.init.type,d,frame); } else evalExpr(node.init.e,frame); snapshot(node.ln); }
+      while(true){
+        if(node.cond){ const c=evalExpr(node.cond,frame); snapshot(node.ln); if(!truthy(c)) break; }
+        const sig=execStmt(node.body,frame);
+        if(sig){ if(sig.type==='break') break; if(sig.type==='return'){ frame.scopes.pop(); return sig; } }
+        if(node.step){ evalExpr(node.step,frame); snapshot(node.ln); }
+      }
+      frame.scopes.pop();
+      return null;
+    }
+    case 'return': { const v=node.e?evalExpr(node.e,frame):{type:'void',value:undefined}; snapshot(node.ln); return {type:'return',value:v}; }
+    case 'break': snapshot(node.ln); return {type:'break'};
+    case 'continue': snapshot(node.ln); return {type:'continue'};
+    case 'cout': { let s=''; for(const part of node.parts){ if(part.k==='endl'){ s+='\n'; continue; } s+=coutStr(evalExpr(part,frame)); } output+=s; snapshot(node.ln); return null; }
+    case 'cin': { for(const part of node.parts){ const lv=resolveLValue(part,frame); const raw=nextInput(); if(raw===null) throw new NeedInput(node.ln); lv.set(parseInputFor(raw,lv.type)); } snapshot(node.ln); return null; }
+  }
+  throw new RErr('Statement tak dikenal', node.ln);
+}
+function flattenVars(scopes){
+  const map=new Map();
+  for(const sc of scopes) for(const [k,rec] of sc) map.set(k,rec);
+  return [...map.entries()].map(([name,rec])=>({name,type:rec.type,value: rec.type==='array'||rec.type==='vector' ? rec.value.slice() : rec.value, elemType:rec.elemType, changed:name===lastChanged}));
+}
+function snapshot(line){
+  if(++stepCount>STEP_LIMIT) throw new RErr(`Eksekusi dihentikan setelah ${STEP_LIMIT} langkah (kemungkinan perulangan tak berhenti).`, line);
+  const frames=callStack.map(f=>({name:f.name, vars:flattenVars(f.scopes)}));
+  trace.push({line, frames, output, changed:lastChanged});
+  lastChanged=null;
+}
+function run(funcsTable,inputStr){
+  funcs=funcsTable; callStack=[]; trace=[]; output=''; stepCount=0; lastChanged=null;
+  inputQueue=(inputStr||'').trim().split(/\s+/).filter(x=>x.length); inputPos=0;
+  if(!funcs['main']) throw new CErr("Fungsi 'main' tidak ditemukan. Program harus memiliki int main() { ... }.", 1);
+  const mainFrame={name:'main',scopes:[new Map()]};
+  callStack.push(mainFrame);
+  snapshot(funcs['main'].ln);
+  let err=null, needInput=null;
+  try{ execBlock(funcs['main'].body,mainFrame); }
+  catch(e){
+    if(e instanceof NeedInput) needInput={ln:e.ln};
+    else if(e instanceof RErr) err={kind:'Eksekusi',message:e.message,ln:e.ln};
+    else throw e;
+  }
+  return {trace, error:err, needInput};
+}
+function runSource(src,inputStr){
+  const cleaned=stripAndMark(src);
+  const toks=lex(cleaned);
+  const funcsTable=parse(toks);
+  return run(funcsTable,inputStr);
+}
+return {runSource};
+})();
+
+/* ===== UI ===== */
+const EXAMPLES={
+bubble:`#include <iostream>
+using namespace std;
+
+int main(){
+    int arr[6] = {8,3,6,1,9,2};
+    int n = 6;
+    for(int i=0;i<n-1;i++){
+        for(int j=0;j<n-i-1;j++){
+            if(arr[j] > arr[j+1]){
+                int tmp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = tmp;
             }
+        }
+    }
+    cout << "Hasil urut: ";
+    for(int i=0;i<n;i++) cout << arr[i] << " ";
+    cout << endl;
+    return 0;
+}`,
+factorial:`#include <iostream>
+using namespace std;
 
-            // Fungsi untuk menghasilkan hash dari string nama
-            function hashString(str) {
-                let hash = 0;
-                if (str.length === 0) return hash;
-                for (let i = 0; i < str.length; i++) {
-                    let char = str.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash; // Convert to 32bit integer
-                }
-                return Math.abs(hash);
-            }
+int factorial(int n){
+    if(n <= 1) return 1;
+    return n * factorial(n - 1);
+}
 
-            generateBtn.addEventListener('click', () => {
-                const nama = namaInput.value.trim();
-                const absen = parseInt(absenInput.value, 10);
+int main(){
+    int x = 5;
+    cout << x << "! = " << factorial(x) << endl;
+    return 0;
+}`,
+fizzbuzz:`#include <iostream>
+using namespace std;
 
-                // Validasi Input
-                if (!nama || isNaN(absen) || absen < 1 || absen > 42) {
-                    errorMessage.classList.remove('hidden');
-                    return;
-                }
-                errorMessage.classList.add('hidden');
+int main(){
+    for(int i = 1; i <= 15; i++){
+        if(i % 15 == 0) cout << "FizzBuzz" << endl;
+        else if(i % 3 == 0) cout << "Fizz" << endl;
+        else if(i % 5 == 0) cout << "Buzz" << endl;
+        else cout << i << endl;
+    }
+    return 0;
+}`
+};
 
-                // Membuat seed unik dari kombinasi nama dan nomor absen
-                const seed = hashString(nama.toLowerCase()) + absen;
+const codeEditor=document.getElementById('codeEditor');
+const codeView=document.getElementById('codeView');
+const exampleSel=document.getElementById('exampleSel');
+const runBtn=document.getElementById('runBtn');
+const editBtn=document.getElementById('editBtn');
+const errorBox=document.getElementById('errorBox');
+const varsBody=document.getElementById('varsBody');
+const stackPanel=document.getElementById('stackPanel');
+const stackList=document.getElementById('stackList');
+const outputPre=document.getElementById('outputPre');
+const outputPanel=document.getElementById('outputPanel');
+const maxBtn=document.getElementById('maxBtn');
+const syntaxBtn=document.getElementById('syntaxBtn');
+const backdrop=document.getElementById('backdrop');
+const consoleBox=document.getElementById('consoleBox');
+const liveInput=document.getElementById('liveInput');
+const transport=document.getElementById('transport');
+const resetBtn=document.getElementById('resetBtn');
+const prevBtn=document.getElementById('prevBtn');
+const nextBtn=document.getElementById('nextBtn');
+const playBtn=document.getElementById('playBtn');
+const slider=document.getElementById('slider');
+const speedSel=document.getElementById('speedSel');
+const statusLine=document.getElementById('statusLine');
+const examToggleBtn=document.getElementById('examToggleBtn');
+const violationPanel=document.getElementById('violationPanel');
+const violationCount=document.getElementById('violationCount');
+const violationList=document.getElementById('violationList');
+const examWarnBar=document.getElementById('examWarnBar');
+const examWarnText=document.getElementById('examWarnText');
+const enterFsBtn=document.getElementById('enterFsBtn');
+const toast=document.getElementById('toast');
 
-                // Memilih variasi soal berdasarkan seed
-                const indexSoal1 = Math.floor(pseudoRandom(seed) * variasiSapaan.length);
-                const indexSoal2 = Math.floor(pseudoRandom(seed + 1) * variasiAritmatika.length); // +1 agar tidak selalu sama dengan soal 1
+let trace=[], idx=0, playing=false, playTimer=null, sourceLines=[], hlLines=[], currentError=null;
+let currentSrc='', fullInput='', transcript='', lastOutputLen=0, pendingLine=null, isWaiting=false;
 
-                // Mengambil nama panggilan (kata pertama)
-                const namaPanggilan = nama.split(' ')[0].toUpperCase();
+/* ===== mode ujian (anti-cheat) ===== */
+let examMode=false, examEverUsed=false, violations=[], toastTimer=null;
+function fmtTime(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function saveViolations(){ try{ localStorage.setItem('cppviz_violations', JSON.stringify(violations)); }catch(e){} }
+function loadViolations(){ try{ const raw=localStorage.getItem('cppviz_violations'); if(raw) return JSON.parse(raw).map(v=>({t:new Date(v.t),msg:v.msg,type:v.type})); }catch(e){} return []; }
+function renderViolations(){
+  const vCount = violations.filter(v=>v.type==='violation').length;
+  violationCount.textContent = String(vCount);
+  violationList.innerHTML = violations.length? violations.map(v=>`<li class="${v.type}"><span class="vtime">${fmtTime(v.t)}</span>${escapeHtml(v.msg)}</li>`).join('') : '<li class="empty">Tidak ada aktivitas tercatat.</li>';
+  violationList.scrollTop = violationList.scrollHeight;
+}
+function logEvent(msg,type){
+  violations.push({t:new Date(), msg, type:type||'violation'});
+  saveViolations();
+  renderViolations();
+}
+function showToast(msg){
+  toast.textContent=msg; toast.hidden=false;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{ toast.hidden=true; }, 4000);
+}
+let fsWasOk=false, fsBlocked=false;
+function updateWarnBar(){
+  if(!examMode){ examWarnBar.hidden=true; return; }
+  const inFs = !!document.fullscreenElement;
+  examWarnBar.hidden = inFs;
+  examWarnBar.classList.toggle('urgent', !inFs && fsWasOk);
+  if(!inFs){
+    examWarnText.textContent = fsBlocked
+      ? '⚠ Tampilan ini tidak mengizinkan mode layar penuh (coba buka halaman ini di tab baru). Kamu tetap bisa lanjut mengerjakan — ini sudah dicatat.'
+      : fsWasOk
+        ? '⚠ Anda keluar dari mode layar penuh — tercatat di log pelanggaran.'
+        : '⚠ Mode Ujian aktif — disarankan gunakan mode layar penuh.';
+  }
+}
+async function enterFullscreen(){
+  try{
+    await document.documentElement.requestFullscreen();
+    fsBlocked=false;
+  }catch(err){
+    fsBlocked=true;
+    logEvent('Gagal mengaktifkan mode layar penuh di tampilan ini','info');
+  }
+  updateWarnBar();
+}
+function setExamMode(on){
+  examMode=on;
+  if(on && !examEverUsed){ examEverUsed=true; }
+  violationPanel.hidden = !examEverUsed;
+  examToggleBtn.textContent = examMode? 'Mode Ujian: Aktif' : 'Mode Ujian: Nonaktif';
+  examToggleBtn.classList.toggle('active', examMode);
+  logEvent(examMode? 'Mode Ujian diaktifkan' : 'Mode Ujian dinonaktifkan', 'info');
+  if(examMode){ fsWasOk=false; fsBlocked=false; enterFullscreen(); }
+  else { if(document.fullscreenElement) document.exitFullscreen().catch(()=>{}); updateWarnBar(); }
+}
+examToggleBtn.addEventListener('click', ()=> setExamMode(!examMode));
+enterFsBtn.addEventListener('click', enterFullscreen);
+document.addEventListener('fullscreenchange', ()=>{
+  if(!examMode) return;
+  if(document.fullscreenElement){
+    if(fsWasOk && !examWarnBar.hidden) logEvent('Kembali ke mode layar penuh','info');
+    fsWasOk=true; fsBlocked=false;
+  } else if(fsWasOk){
+    logEvent('Keluar dari mode layar penuh','violation');
+  }
+  updateWarnBar();
+});
+let wasHiddenForExam=false;
+document.addEventListener('visibilitychange', ()=>{
+  if(!examMode) return;
+  if(document.hidden){
+    wasHiddenForExam=true;
+    logEvent('Berpindah tab/aplikasi lain','violation');
+  } else if(wasHiddenForExam){
+    wasHiddenForExam=false;
+    showToast('⚠ Sempat berpindah tab/aplikasi lain — sudah dicatat di log pelanggaran.');
+  }
+});
+(function initViolations(){
+  violations = loadViolations();
+  if(violations.length){ examEverUsed=true; renderViolations(); }
+})();
 
-                // Format teks soal
-                const teksSapaan = variasiSapaan[indexSoal1].replace('{nama}', namaPanggilan);
-                
-                const teksSoal1 = `Buatkan kode program C++ yang meminta pengguna menginputkan nama (contoh input: ${namaPanggilan}) dan menjadikan output tepat seperti berikut: <strong>"${teksSapaan}"</strong>.`;
-                const teksSoal2 = `Buatkan kode program C++ yang dapat <strong>${variasiAritmatika[indexSoal2]}</strong> Pastikan program menggunakan struktur input (cin) dan output (cout) yang benar.`;
+codeEditor.value = '';
 
-                displayNama.textContent = nama;
-                displayAbsen.textContent = absen;
-                soal1El.innerHTML = teksSoal1;
-                soal2El.innerHTML = teksSoal2;
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtD(v){ if(Number.isInteger(v)) return v.toFixed(1); let s=v.toFixed(6).replace(/0+$/,''); if(s.endsWith('.')) s+='0'; return s; }
+function displayVal(v){
+  if(v.type==='bool') return v.value?'true':'false';
+  if(v.type==='char') return "'"+v.value+"'";
+  if(v.type==='string') return '"'+v.value+'"';
+  if(v.type==='double'||v.type==='float') return fmtD(v.value);
+  if(v.type==='array'||v.type==='vector') return '['+v.value.map(x=>typeof x==='number'?fmtD(x):(typeof x==='boolean'?(x?'true':'false'):x)).join(', ')+']';
+  return String(v.value);
+}
 
-                // Animasi transisi antar view
-                inputForm.classList.add('hidden');
-                resultArea.classList.remove('hidden');
-            });
-
-            resetBtn.addEventListener('click', () => {
-                inputForm.classList.remove('hidden');
-                resultArea.classList.add('hidden');
-                namaInput.value = '';
-                absenInput.value = '';
-                namaInput.focus();
-            });
-            
-            // Allow Enter key to trigger generation
-            inputForm.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    generateBtn.click();
-                }
-            });
-        });
-    </script>
+const HL_KEYWORDS=new Set(['if','else','for','while','do','return','break','continue']);
+const HL_TYPES=new Set(['int','float','double','char','bool','string','void','long','short','unsigned','vector','true','false']);
+function hlAtLineStart(src,i){ let k=i-1; while(k>=0 && (src[k]===' '||src[k]==='\t')) k--; return k<0 || src[k]==='\n'; }
+function highlightTokens(src){
+  const lines=[[]]; let li=0;
+  function push(cls,text){
+    const parts=text.split('\n');
+    for(let i=0;i<parts.length;i++){
+      if(i>0){ li++; lines[li]=[]; }
+      if(parts[i].length) lines[li].push({cls,text:parts[i]});
+    }
+  }
+  let i=0; const n=src.length;
+  while(i<n){
+    const c=src[i];
+    if(c==='#' && hlAtLineStart(src,i)){ let j=src.indexOf('\n',i); if(j===-1) j=n; push('pp',src.slice(i,j)); i=j; continue; }
+    if(c==='/' && src[i+1]==='/'){ let j=src.indexOf('\n',i); if(j===-1) j=n; push('cm',src.slice(i,j)); i=j; continue; }
+    if(c==='/' && src[i+1]==='*'){ let j=src.indexOf('*/',i+2); const end=j===-1?n:j+2; push('cm',src.slice(i,end)); i=end; continue; }
+    if(c==='"'){ let j=i+1; while(j<n && src[j]!=='"'){ j+= src[j]==='\\'?2:1; } j=Math.min(j+1,n); push('st',src.slice(i,j)); i=j; continue; }
+    if(c==="'"){ let j=i+1; while(j<n && src[j]!=="'"){ j+= src[j]==='\\'?2:1; } j=Math.min(j+1,n); push('st',src.slice(i,j)); i=j; continue; }
+    if(/[A-Za-z_]/.test(c)){ let j=i; while(j<n && /[A-Za-z0-9_]/.test(src[j])) j++; const w=src.slice(i,j); push(HL_KEYWORDS.has(w)?'kw':HL_TYPES.has(w)?'ty':'id', w); i=j; continue; }
+    if(/[0-9]/.test(c) || (c==='.' && /[0-9]/.test(src[i+1]||''))){ let j=i; while(j<n && /[0-9.]/.test(src[j])) j++; if(src[j]==='f'||src[j]==='F') j++; push('nu',src.slice(i,j)); i=j; continue; }
+    if(c==='\n'){ push('pl','\n'); i++; continue; }
+    let j=i;
+    while(j<n && !'"\'#/\n'.includes(src[j]) && !/[A-Za-z_0-9.]/.test(src[j])) j++;
+    if(j===i) j=i+1;
+    push('pl',src.slice(i,j));
+    i=j;
+  }
+  return lines;
+}
+let syntaxColorOn=(function(){ try{ return localStorage.getItem('cppviz_syncolor')==='1'; }catch(e){ return false; } })();
+function setSyntaxColor(on){
+  syntaxColorOn=on;
+  syntaxBtn.textContent = on? 'Warna sintaks: Aktif' : 'Warna sintaks: Nonaktif';
+  syntaxBtn.classList.toggle('active', on);
+  try{ localStorage.setItem('cppviz_syncolor', on?'1':'0'); }catch(e){}
+  if(!codeView.hidden) renderStep(idx);
+  else if(on) showToast('Warna sintaks akan terlihat setelah kamu klik "Jalankan & visualisasikan" — kotak edit teks biasa tidak bisa diwarnai.');
+}
+syntaxBtn.addEventListener('click', ()=> setSyntaxColor(!syntaxColorOn));
+if(syntaxColorOn){ syntaxBtn.textContent='Warna sintaks: Aktif'; syntaxBtn.classList.add('active'); }
+function lineHtml(i){
+  const raw = sourceLines[i]||'';
+  const segs = hlLines[i];
+  if(!syntaxColorOn || !segs || !segs.length){
+    const html=escapeHtml(raw);
+    return html.length?html:'&nbsp;';
+  }
+  const html = segs.map(s=>`<span class="tok-${s.cls}">${escapeHtml(s.text)}</span>`).join('');
+  return html.length?html:'&nbsp;';
+}
+function renderCode(lines, curLine, waitLine){
+  codeView.innerHTML = lines.map((l,i)=>{
+    const n=i+1;
+    let cls='line';
+    if(n===curLine) cls='line cur'; else if(n===waitLine) cls='line waiting';
+    return `<div class="${cls}" data-ln="${n}"><span class="ln">${n}</span><span class="src">${lineHtml(i)}</span></div>`;
+  }).join('');
+  const sel = curLine? '.cur' : (waitLine? '.waiting' : null);
+  const el = sel? codeView.querySelector(sel) : null;
+  if(el) el.scrollIntoView({block:'center'});
+}
+function pausePlay(){ playing=false; clearInterval(playTimer); playBtn.textContent='▶ Putar otomatis'; }
+function renderOutput(){
+  if(isWaiting){
+    outputPre.innerHTML = escapeHtml(transcript + liveInput.value) + '<span class="cursor">▋</span>';
+  } else {
+    const atFrontier = idx===trace.length-1;
+    const text = atFrontier? transcript : trace[idx].output;
+    outputPre.textContent = text || '(belum ada output)';
+  }
+  outputPre.scrollTop = outputPre.scrollHeight;
+}
+function renderStep(i){
+  idx=Math.max(0, Math.min(i, trace.length-1));
+  const st=trace[idx];
+  const atFrontier = idx===trace.length-1;
+  const waiting = atFrontier && pendingLine && !currentError;
+  isWaiting = waiting;
+  renderCode(sourceLines, waiting?null:st.line, waiting?pendingLine:null);
+  const top=st.frames[st.frames.length-1];
+  varsBody.innerHTML = top.vars.length? top.vars.map(v=>`<tr class="${v.changed?'flash':''}"><td>${v.name}</td><td class="tcol">${v.type}</td><td>${displayVal(v)}</td></tr>`).join('') : '<tr><td class="empty" colspan="3">(tidak ada variabel lokal)</td></tr>';
+  if(st.frames.length>1){
+    stackPanel.hidden=false;
+    stackList.innerHTML = st.frames.slice().reverse().map((f,ri)=>`<li class="${ri===0?'top':''}">${f.name}()</li>`).join('');
+  } else stackPanel.hidden=true;
+  renderOutput();
+  consoleBox.classList.toggle('waiting', waiting);
+  if(waiting) liveInput.focus();
+  slider.value = idx;
+  let s = `Langkah ${idx+1} dari ${trace.length}`;
+  if(!waiting && st.line) s += ' — baris '+st.line;
+  if(atFrontier){
+    if(waiting) s += '  •  menunggu input (baris '+pendingLine+')';
+    else if(currentError) s += '  •  berhenti karena galat';
+    else s += '  •  selesai';
+  }
+  statusLine.textContent = s;
+  prevBtn.disabled = idx===0;
+  nextBtn.disabled = atFrontier;
+  playBtn.disabled = atFrontier;
+  if(atFrontier) pausePlay();
+}
+function startPlay(){
+  if(idx>=trace.length-1) return;
+  playing=true; playBtn.textContent='❚❚ Jeda';
+  playTimer=setInterval(()=>{
+    if(idx>=trace.length-1){ pausePlay(); return; }
+    renderStep(idx+1);
+  }, parseInt(speedSel.value,10));
+}
+function showSetupError(e){
+  trace=[]; currentError=null; pendingLine=null; isWaiting=false;
+  transport.hidden=true; stackPanel.hidden=true; consoleBox.classList.remove('waiting');
+  codeEditor.hidden=false; codeView.hidden=true; editBtn.hidden=true; runBtn.textContent='Jalankan & visualisasikan';
+  varsBody.innerHTML='<tr><td class="empty" colspan="3">Belum dijalankan</td></tr>';
+  outputPre.textContent='';
+  errorBox.hidden=false;
+  errorBox.textContent = `Galat ${ (e.kind||'Sintaks').toLowerCase() } pada baris ${e.ln??'?'}: ${e.message}`;
+}
+function applyRunResult(result){
+  trace = result.trace;
+  currentError = result.error;
+  pendingLine = result.needInput? result.needInput.ln : null;
+  const newFull = trace.length? trace[trace.length-1].output : '';
+  transcript += newFull.slice(lastOutputLen);
+  lastOutputLen = newFull.length;
+  slider.max = Math.max(0, trace.length-1);
+  if(currentError){
+    errorBox.hidden=false;
+    errorBox.textContent = `Galat eksekusi pada baris ${currentError.ln}: ${currentError.message} (langkah sampai di sini masih bisa ditelusuri)`;
+  } else errorBox.hidden=true;
+  renderStep(trace.length-1);
+}
+function runFromInput(){
+  let result;
+  try{ result = CppInterp.runSource(currentSrc, fullInput); }
+  catch(e){ showSetupError(e); return; }
+  applyRunResult(result);
+}
+function submitInput(){
+  const val = liveInput.value.trim();
+  if(!val) return;
+  transcript += val + '\n';
+  fullInput = (fullInput + ' ' + val).trim();
+  liveInput.value='';
+  runFromInput();
+}
+let maximized=false;
+function setMaximized(v){
+  maximized=v;
+  outputPanel.classList.toggle('maximized', v);
+  backdrop.hidden=!v;
+  document.body.style.overflow = v? 'hidden':'';
+  maxBtn.textContent = v? '✕ Tutup' : '⛶ Layar penuh';
+  if(v && isWaiting) liveInput.focus();
+}
+maxBtn.addEventListener('click', ()=> setMaximized(!maximized));
+backdrop.addEventListener('click', ()=> setMaximized(false));
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && maximized) setMaximized(false); });
+consoleBox.addEventListener('click', ()=>{ if(isWaiting) liveInput.focus(); });
+liveInput.addEventListener('input', ()=>{ if(isWaiting) renderOutput(); });
+liveInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submitInput(); } });
+function doRun(){
+  errorBox.hidden=true;
+  const src = codeEditor.value;
+  currentSrc = src; fullInput=''; transcript=''; lastOutputLen=0; pendingLine=null; currentError=null;
+  let result;
+  try{ result = CppInterp.runSource(currentSrc, fullInput); }
+  catch(e){ showSetupError(e); return; }
+  sourceLines = src.split('\n');
+  hlLines = highlightTokens(src);
+  codeEditor.hidden=true; codeView.hidden=false; editBtn.hidden=false; runBtn.textContent='Jalankan ulang';
+  transport.hidden=false;
+  applyRunResult(result);
+}
+runBtn.addEventListener('click', doRun);
+editBtn.addEventListener('click', ()=>{
+  pausePlay();
+  setMaximized(false);
+  currentSrc=''; fullInput=''; transcript=''; lastOutputLen=0; pendingLine=null; currentError=null; isWaiting=false;
+  codeEditor.hidden=false; codeView.hidden=true; transport.hidden=true; editBtn.hidden=true; errorBox.hidden=true; stackPanel.hidden=true; consoleBox.classList.remove('waiting');
+  runBtn.textContent='Jalankan & visualisasikan';
+  varsBody.innerHTML='<tr><td class="empty" colspan="3">Belum dijalankan</td></tr>';
+  outputPre.textContent='';
+});
+resetBtn.addEventListener('click', ()=>{ pausePlay(); renderStep(0); });
+prevBtn.addEventListener('click', ()=>{ pausePlay(); renderStep(idx-1); });
+nextBtn.addEventListener('click', ()=>{ pausePlay(); renderStep(idx+1); });
+playBtn.addEventListener('click', ()=> playing? pausePlay() : startPlay());
+slider.addEventListener('input', ()=>{ pausePlay(); renderStep(parseInt(slider.value,10)); });
+speedSel.addEventListener('change', ()=>{ if(playing){ pausePlay(); startPlay(); } });
+exampleSel.addEventListener('change', ()=>{
+  const key=exampleSel.value; if(!key) return;
+  if(!codeView.hidden) editBtn.click();
+  codeEditor.value = EXAMPLES[key];
+  exampleSel.value='';
+});
+</script>
 </body>
 </html>
