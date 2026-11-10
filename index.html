@@ -9,57 +9,83 @@
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
 
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-        <div class="bg-blue-600 p-6 text-center">
-            <h1 class="text-2xl font-bold text-white">Akses Link Tugas</h1>
-            <p class="text-blue-100 mt-1 text-sm">Lengkapi data diri untuk mendapatkan link</p>
+        <div class="bg-blue-600 p-6 text-center" id="header-bg">
+            <h1 class="text-2xl font-bold text-white" id="header-title">Akses Link Tugas</h1>
+            <p class="text-blue-100 mt-1 text-sm" id="header-desc">Lengkapi data diri untuk mendapatkan link</p>
         </div>
 
-        <div class="p-6 space-y-5">
-            <!-- Form Input -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
-                <select id="kelas" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition">
-                    <option value="" disabled selected>-- Pilih Kelas --</option>
-                    <option value="8A">8A</option>
-                    <option value="8B">8B</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">No Absen</label>
-                <select id="absen" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" disabled>
-                    <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
-                <!-- Input nama diubah agar bisa diisi manual -->
-                <input type="text" id="nama" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" placeholder="Ketik nama lengkap Anda di sini...">
-            </div>
-
-            <button id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition opacity-50 cursor-not-allowed" disabled>
-                Generate Link
-            </button>
-
-            <!-- Result Area -->
-            <div id="result" class="hidden mt-6 pt-6 border-t border-gray-200">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Link Dokumen Anda:</label>
-                <div class="flex gap-2">
-                    <input type="text" id="link-display" class="w-full rounded-lg border-gray-300 border p-2 text-sm bg-gray-50 text-gray-600 outline-none" readonly>
-                    <button id="btn-copy" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg transition text-sm whitespace-nowrap">
-                        Copy
-                    </button>
+        <div class="p-6 space-y-5" id="main-content">
+            
+            <!-- FORM AREA (Akan disembunyikan jika sudah pernah generate) -->
+            <div id="form-area" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
+                    <select id="kelas" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition">
+                        <option value="" disabled selected>-- Pilih Kelas --</option>
+                        <option value="8A">8A</option>
+                        <option value="8B">8B</option>
+                    </select>
                 </div>
-                <a id="btn-open" href="#" target="_blank" class="mt-3 block w-full text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-2 px-4 rounded-lg transition">
-                    Buka Spreadsheet
-                </a>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">No Absen</label>
+                    <select id="absen" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" disabled>
+                        <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="nama" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" placeholder="Ketik nama lengkap Anda di sini...">
+                </div>
+
+                <button id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition opacity-50 cursor-not-allowed" disabled>
+                    Generate Link
+                </button>
             </div>
+
+            <!-- RESULT & LOCKED AREA -->
+            <div id="result-area" class="hidden space-y-4">
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4 rounded-r-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-1.998A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700 font-medium">
+                                Perangkat ini telah dikunci untuk data berikut. Anda tidak bisa mengenerate link absen lain di perangkat ini.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Terdaftar Sebagai:</p>
+                    <p class="text-lg font-bold text-gray-800 mt-1" id="locked-nama">-</p>
+                    <p class="text-sm text-gray-600">Kelas <span id="locked-kelas" class="font-semibold">-</span> | Absen <span id="locked-absen" class="font-semibold">-</span></p>
+                </div>
+
+                <div class="pt-4 border-t border-gray-200">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Link Tugas Anda:</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="link-display" class="w-full rounded-lg border-gray-300 border p-2 text-sm bg-gray-50 text-gray-600 outline-none" readonly>
+                        <button id="btn-copy" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg transition text-sm whitespace-nowrap">
+                            Copy
+                        </button>
+                    </div>
+                    <a id="btn-open" href="#" target="_blank" class="mt-3 block w-full text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-2 px-4 rounded-lg transition">
+                        Buka Spreadsheet
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // Database Siswa & Link (Nama tetap disimpan sebagai referensi/dokumentasi internal)
+        // Database Siswa & Link
         const dataSiswa = {
             "8A": [
                 { absen: 1, nama: "Aldrich Louis Tanwijaya", link: "https://docs.google.com/spreadsheets/d/1-m43tyqYUSsr_V07MXvgPNuFEg8lk1kx/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
@@ -119,19 +145,60 @@
         const elAbsen = document.getElementById('absen');
         const elNama = document.getElementById('nama');
         const btnGenerate = document.getElementById('btn-generate');
-        const resultDiv = document.getElementById('result');
+        
+        const formArea = document.getElementById('form-area');
+        const resultArea = document.getElementById('result-area');
+        
+        const lockedNama = document.getElementById('locked-nama');
+        const lockedKelas = document.getElementById('locked-kelas');
+        const lockedAbsen = document.getElementById('locked-absen');
+        
         const linkDisplay = document.getElementById('link-display');
         const btnOpen = document.getElementById('btn-open');
         const btnCopy = document.getElementById('btn-copy');
 
-        // Fungsi mengecek apakah semua field sudah diisi
+        const headerBg = document.getElementById('header-bg');
+        const headerTitle = document.getElementById('header-title');
+        const headerDesc = document.getElementById('header-desc');
+
+        const STORAGE_KEY = 'DataTugasTIK_Siswa';
+
+        // --- FUNGSI INISIALISASI (Cek apakah sudah pernah generate) ---
+        function checkExistingData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                lockInterface(data);
+            }
+        }
+
+        // --- FUNGSI MENGUNCI TAMPILAN ---
+        function lockInterface(data) {
+            // Sembunyikan form input
+            formArea.classList.add('hidden');
+            
+            // Tampilkan area hasil/terkunci
+            resultArea.classList.remove('hidden');
+            
+            // Ubah gaya header
+            headerBg.classList.replace('bg-blue-600', 'bg-gray-800');
+            headerTitle.textContent = 'Link Terkunci';
+            headerDesc.textContent = 'Browser ini sudah dikaitkan dengan satu identitas';
+
+            // Isi data di UI
+            lockedNama.textContent = data.namaInput;
+            lockedKelas.textContent = data.kelas;
+            lockedAbsen.textContent = data.absen;
+            
+            linkDisplay.value = data.link;
+            btnOpen.href = data.link;
+        }
+
+        // --- LOGIC FORM INPUT ---
         function checkFormValidity() {
             const isKelasValid = elKelas.value !== "";
             const isAbsenValid = elAbsen.value !== "";
-            const isNamaValid = elNama.value.trim() !== ""; // Cek apakah nama tidak kosong
-
-            // Jika ada perubahan, sembunyikan hasil sebelumnya
-            resultDiv.classList.add('hidden');
+            const isNamaValid = elNama.value.trim() !== ""; 
 
             if (isKelasValid && isAbsenValid && isNamaValid) {
                 btnGenerate.disabled = false;
@@ -142,11 +209,8 @@
             }
         }
 
-        // Event saat Kelas dipilih
         elKelas.addEventListener('change', (e) => {
             const kelas = e.target.value;
-            
-            // Reset dropdown absen
             elAbsen.innerHTML = '<option value="" disabled selected>-- Pilih No Absen --</option>';
             
             if (kelas && dataSiswa[kelas]) {
@@ -160,36 +224,42 @@
             } else {
                 elAbsen.disabled = true;
             }
-            
             checkFormValidity();
         });
 
-        // Event saat Absen dipilih
         elAbsen.addEventListener('change', checkFormValidity);
-
-        // Event saat Nama diketik
         elNama.addEventListener('input', checkFormValidity);
 
-        // Logic Generate Link
+        // --- LOGIC TOMBOL GENERATE (MENGUNCI DATA) ---
         btnGenerate.addEventListener('click', () => {
             const kelas = elKelas.value;
             const absen = parseInt(elAbsen.value);
+            const namaInput = elNama.value.trim();
 
-            if (kelas && absen) {
+            if (kelas && absen && namaInput) {
                 const siswa = dataSiswa[kelas].find(s => s.absen === absen);
                 if (siswa) {
-                    linkDisplay.value = siswa.link;
-                    btnOpen.href = siswa.link;
-                    resultDiv.classList.remove('hidden');
+                    // Buat object data untuk disimpan
+                    const userData = {
+                        kelas: kelas,
+                        absen: absen,
+                        namaInput: namaInput,
+                        link: siswa.link
+                    };
+                    
+                    // Simpan permanen di browser
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+                    
+                    // Kunci tampilan
+                    lockInterface(userData);
                 }
             }
         });
 
-        // Logic Copy text
+        // --- LOGIC COPY TEXT ---
         btnCopy.addEventListener('click', () => {
             linkDisplay.select();
             document.execCommand('copy');
-            const originalText = btnCopy.textContent;
             btnCopy.textContent = 'Tersalin!';
             btnCopy.classList.add('bg-green-200', 'text-green-800');
             setTimeout(() => {
@@ -197,6 +267,9 @@
                 btnCopy.classList.remove('bg-green-200', 'text-green-800');
             }, 2000);
         });
+
+        // Jalankan pengecekan saat halaman dimuat
+        checkExistingData();
     </script>
 </body>
 </html>
