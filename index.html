@@ -19,13 +19,13 @@
         <!-- Header -->
         <div class="bg-blue-600 p-6 text-center">
             <h1 class="text-2xl font-bold text-white">Portal Link Siswa</h1>
-            <p class="text-blue-100 mt-2 text-sm">Pilih kelas dan nama Anda untuk mendapatkan akses link.</p>
+            <p class="text-blue-100 mt-2 text-sm">Pilih kelas dan kelompok Anda untuk mendapatkan akses link.</p>
         </div>
 
         <!-- Section: Form Input -->
         <div id="form-section" class="p-8">
             <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded text-sm">
-                <strong>⚠️ Peringatan:</strong> Anda hanya dapat melakukan generate link <strong>satu kali</strong> pada perangkat ini. Pastikan nama yang dipilih sudah benar!
+                <strong>⚠️ Peringatan:</strong> Anda hanya dapat melakukan generate link <strong>satu kali</strong> pada perangkat ini. Pastikan kelompok yang dipilih sudah benar!
             </div>
 
             <form id="generator-form" class="space-y-5">
@@ -33,13 +33,13 @@
                     <label for="kelas" class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
                     <select id="kelas" required class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow bg-gray-50">
                         <option value="" disabled selected>-- Pilih Kelas --</option>
-                        <option value="6A">Kelas 6A</option>
-                        <option value="6B">Kelas 6B</option>
+                        <option value="7A">Kelas 7A</option>
+                        <option value="7B">Kelas 7B</option>
                     </select>
                 </div>
 
                 <div>
-                    <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Nama Siswa</label>
+                    <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Nama Kelompok</label>
                     <select id="nama" required disabled class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                         <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
                     </select>
@@ -84,19 +84,19 @@
 
     <script>
         // Data Mentah dari Prompt (Nama dan Link sudah disesuaikan berurutan)
-        const names6A = [
-            "Air Balakosa", "Albert Christhopper Prilia Hartawan", "Amazing Kasih Palada", "Amelsera Gloria Esterlita Fredrick", "Andrew Ryu Cendra", "Bellvania Achazia Andrina Ludji", "Clarisse Jadeite Bellvania Lonata", "Deven Timothy Kiuk", "Esther Violette Sharon Hendrawan", "Jonathan Indra Kusuma", "Kinanthi Reandra Abigail Budyono", "Manuel Garcia Ririhena", "Matthew Cristano Chandra", "Moses Prabowo", "Rise Shelby Misacious", "Una Tiana Ong", "Vygotsky Jananta Salmun Ruku", "Yosua Tampubolon", "Zooey Gabriella Crawfurd"
+        const names7A = [
+            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4"
         ];
-        const links6A = "https://docs.google.com/spreadsheets/d/11Mj__cyt3cxTKDPRhc_jXHojWDNH4TQV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/11xc98HAJFPV_iS5atRyyZXfR87H-m5Ux/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/13GMOGpkzJAgRp_rZ8gdpykq6e24hfAyK/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1BPv9qi7wprt7Evs0fWcPhKsF8gyR_GPd/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1FdfSEpwhO0bKNRt2Fu0wu00SE6flch50/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1MTj6C_hyIarqEJjQfx79Sh-qTgwgNLC9/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1RlB1T61Z4yIpT19iKCcudKZWYc2IcjEX/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1T6vILPu68RdwpcVXRB7OR6MggWP7uycO/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1V0II6uGgSVkTi5cAovwXpQMO1HuBzJLC/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1XN6Y42NoL2GlV8Z5TQ1p-6ro2kOk3Cs7/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1aCIUphsIKkbKql07ltwv3hVBzW_TDw8c/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1bLgzywg1WxoI1HmriDMVSNJ9JM-Hflkx/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1dMrJQzKR9b4mMxzG37oMwj-8piNuzz0u/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1f0vujB5AYAbA6u0XbfpJVlQCTJ6ag62E/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1gx95COvopYXiRS1TFixyjsctqABp_rA2/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1htLNgKqA9-VAB9UcEfxpsPPthFt3zaRU/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1klWY5JEdDFIcXZ8NZIADINLyu88KVAKq/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1mQ4qoAGFeFJTPmdLTl4E1NDQk3QBTg-U/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1nUbjkL7jdBD0Nao_QUynGXV81t8__j3B/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+        const links7A = "https://docs.google.com/document/d/1QNeSs8IXTyOIJV35avyfbPoJYgrS3skg/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1V-MJnPkOOQ8c_-wAt3y3EnGiIaWEGIyC/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1dPPsN08CGBlkbB3PTq59EO3L0wTtb4Nr/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1kziByf_gzQLuAtQe6PSAoEiutsEowYsV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
 
-        const names6B = [
-            "Ayu Cantika Surya Darma", "Boanerges Fridly Suman Tamonob", "Clairine Saralee Waltraud Lonata", "Colin Johannes Hartanto", "Cora Melody Lesmana", "Daniel Tampubolon", "Elgiva Patricia Muti Ngai", "Ezra Nathanael Arif", "Gosyena Queena Revival", "Grace Sayang Palada", "Joceline Lidya Sir Michael", "Joeb Edward Zhang", "Judith Shallom Libra", "Manuel Nathanael Nugraha", "Milanrose Lifesaver Manengkei", "Nail Ethan Setiono", "Oliver Wijayanto", "Silvana Nindy Putri Sujarwadi", "Syahira Husni"
+        const names7B = [
+            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4"
         ];
-        const links6B = "https://docs.google.com/spreadsheets/d/144mNigCHK2zqvAcaEa-gffgtVGKTknU1/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1AVxDNWzhoEwk6wKuV6D1sKiGci28Xjbv/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1Cm5_IfIkhZXx0R5tBazo5Az5d-SGp-Os/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1D1YndNZYfBYHBoacI2gIlZdxlAIB96TL/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1H4eu8SBgV13vVYzij3sqttQJEJZ7kScV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1JH4h42L6M7RuP05mRTYX0azgbcX7vs1G/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1LQ-vC1QkbL2mnJ3pdNp_4Fx3JCb8OEzl/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1R5Hl3lBFiVaAYKhY6_K1QqPhETUD-j9Y/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1RAbzw1j7OGOh-2P8Y4oCIBiYfy-d6khD/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1SiNljgKvhs1A1w8V-rT4O_h72ftwRO0m/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1YEPKxYPRmhLbANE7dD5qsSKQRRrcmgQ1/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1fs8R3mHhNNUhz-lJoOCYorNbNQhngBaw/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1mOIkZNO8vYEDCC487WElr-wTKmVpc67k/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1nqONKtzrtHDeJuvRQCC-7nTUTsvpGz0O/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1qJwWK52sjoCZirLMfGSMyWMv0F9ItlNf/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1sBWgHI8A9i4Ol1UzzGL4nfwCcGKGhT1R/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1skLk5J84RixURjH6QLNpWBMqX3T6xtv8/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1xN8KkoLfIYJEXDVFRyTD22G1ihl8l5rT/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1xeSE3IBgtSPT9OssG76lVHSx3y2VeXVI/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+        const links7B = "https://docs.google.com/document/d/1DoYPN2eA0z2WmGp-4uTGFoX_RBtudSuD/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1HW2tlnnmTYWoNPRvRNvGOi-arcQGJZHH/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1WpBS2a6oR1YWYubgg7jklNCrRIGkHH3h/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1fbJjUHpkmIPNbgn9dxfykQwOWYQnpNBQ/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
 
         const studentData = {
-            "6A": names6A.map((name, index) => ({ name, link: links6A[index] })),
-            "6B": names6B.map((name, index) => ({ name, link: links6B[index] }))
+            "7A": names7A.map((name, index) => ({ name, link: links7A[index] })),
+            "7B": names7B.map((name, index) => ({ name, link: links7B[index] }))
         };
 
         // DOM Elements
@@ -108,7 +108,7 @@
         
         // Cek Local Storage saat aplikasi dimuat
         document.addEventListener('DOMContentLoaded', () => {
-            const savedData = localStorage.getItem('userGeneratedLink');
+            const savedData = localStorage.getItem('userGeneratedLink_7');
             
             if (savedData) {
                 // Jika sudah pernah generate, langsung tampilkan hasilnya
@@ -122,7 +122,7 @@
             const selectedClass = e.target.value;
             
             // Bersihkan dan aktifkan dropdown nama
-            namaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nama Siswa --</option>';
+            namaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Kelompok --</option>';
             namaSelect.disabled = false;
 
             if (studentData[selectedClass]) {
@@ -153,7 +153,7 @@
             };
 
             // Simpan ke Local Storage agar tidak bisa generate ulang
-            localStorage.setItem('userGeneratedLink', JSON.stringify(finalDataToSave));
+            localStorage.setItem('userGeneratedLink_7', JSON.stringify(finalDataToSave));
 
             // Tampilkan Hasil
             showResult(finalDataToSave);
