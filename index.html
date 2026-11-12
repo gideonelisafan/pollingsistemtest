@@ -3,273 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Link Tugas TIK</title>
+    <title>Generator Link Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-        <div class="bg-blue-600 p-6 text-center" id="header-bg">
-            <h1 class="text-2xl font-bold text-white" id="header-title">Akses Link Tugas</h1>
-            <p class="text-blue-100 mt-1 text-sm" id="header-desc">Lengkapi data diri untuk mendapatkan link</p>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-gray-100">
+        
+        <!-- Header -->
+        <div class="bg-blue-600 p-6 text-center">
+            <h1 class="text-2xl font-bold text-white">Portal Link Siswa</h1>
+            <p class="text-blue-100 mt-2 text-sm">Pilih kelas dan nama Anda untuk mendapatkan akses link.</p>
         </div>
 
-        <div class="p-6 space-y-5" id="main-content">
-            
-            <!-- FORM AREA (Akan disembunyikan jika sudah pernah generate) -->
-            <div id="form-area" class="space-y-5">
+        <!-- Section: Form Input -->
+        <div id="form-section" class="p-8">
+            <div class="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 rounded text-sm">
+                <strong>⚠️ Peringatan:</strong> Anda hanya dapat melakukan generate link <strong>satu kali</strong> pada perangkat ini. Pastikan nama yang dipilih sudah benar!
+            </div>
+
+            <form id="generator-form" class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
-                    <select id="kelas" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition">
+                    <label for="kelas" class="block text-sm font-semibold text-gray-700 mb-1">Kelas</label>
+                    <select id="kelas" required class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow bg-gray-50">
                         <option value="" disabled selected>-- Pilih Kelas --</option>
-                        <option value="8A">8A</option>
-                        <option value="8B">8B</option>
+                        <option value="6A">Kelas 6A</option>
+                        <option value="6B">Kelas 6B</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">No Absen</label>
-                    <select id="absen" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" disabled>
+                    <label for="nama" class="block text-sm font-semibold text-gray-700 mb-1">Nama Siswa</label>
+                    <select id="nama" required disabled class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                         <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
                     </select>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
-                    <input type="text" id="nama" class="w-full rounded-lg border-gray-300 border p-2.5 bg-gray-50 focus:border-blue-500 focus:ring-blue-500 outline-none transition" placeholder="Ketik nama lengkap Anda di sini...">
-                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 mt-4 shadow-md">
+                    Dapatkan Link Saya
+                </button>
+            </form>
+        </div>
 
-                <button id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition opacity-50 cursor-not-allowed" disabled>
-                    Generate Link
+        <!-- Section: Result -->
+        <div id="result-section" class="p-8 hidden text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Link Berhasil Dibuat!</h2>
+            <p class="text-gray-600 mb-6">Halo <strong id="res-nama" class="text-blue-600"></strong> dari kelas <strong id="res-kelas"></strong>. Ini adalah link unik Anda.</p>
+            
+            <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-6 break-all">
+                <a id="res-link" href="#" target="_blank" class="text-blue-600 hover:text-blue-800 underline text-sm font-medium"></a>
+            </div>
+
+            <div class="space-y-3">
+                <a id="res-btn-open" href="#" target="_blank" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 shadow-md">
+                    Buka Dokumen
+                </a>
+                <button id="btn-copy" type="button" class="block w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 border border-gray-300 rounded-lg transition-colors duration-200 shadow-sm">
+                    Salin Link
                 </button>
             </div>
-
-            <!-- RESULT & LOCKED AREA -->
-            <div id="result-area" class="hidden space-y-4">
-                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-4 rounded-r-lg">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-1.998A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-yellow-700 font-medium">
-                                Perangkat ini telah dikunci untuk data berikut. Anda tidak bisa mengenerate link absen lain di perangkat ini.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Terdaftar Sebagai:</p>
-                    <p class="text-lg font-bold text-gray-800 mt-1" id="locked-nama">-</p>
-                    <p class="text-sm text-gray-600">Kelas <span id="locked-kelas" class="font-semibold">-</span> | Absen <span id="locked-absen" class="font-semibold">-</span></p>
-                </div>
-
-                <div class="pt-4 border-t border-gray-200">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Link Tugas Anda:</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="link-display" class="w-full rounded-lg border-gray-300 border p-2 text-sm bg-gray-50 text-gray-600 outline-none" readonly>
-                        <button id="btn-copy" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg transition text-sm whitespace-nowrap">
-                            Copy
-                        </button>
-                    </div>
-                    <a id="btn-open" href="#" target="_blank" class="mt-3 block w-full text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-bold py-2 px-4 rounded-lg transition">
-                        Buka Spreadsheet
-                    </a>
-                </div>
-            </div>
-
+            
+            <p class="mt-6 text-xs text-gray-500 italic">Data akses Anda telah tersimpan di browser ini. Anda tidak dapat mengambil link milik orang lain dari perangkat ini.</p>
         </div>
+
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300">
+        Link berhasil disalin!
     </div>
 
     <script>
-        // Database Siswa & Link
-        const dataSiswa = {
-            "8A": [
-                { absen: 1, nama: "Aldrich Louis Tanwijaya", link: "https://docs.google.com/spreadsheets/d/1-m43tyqYUSsr_V07MXvgPNuFEg8lk1kx/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 2, nama: "Alexander Christian", link: "https://docs.google.com/spreadsheets/d/11x42pXnsKI4EuQJsBx-1yMfY9uC2yepM/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 3, nama: "Aulin Eugenia Sharon", link: "https://docs.google.com/spreadsheets/d/1BbJNCqatfbIhBb9ljUPukSXlc72JyP67/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 4, nama: "Beatriz Olivia Dewi", link: "https://docs.google.com/spreadsheets/d/1C-sKCrCQL9Sz9_2OIf2HugVV1lX1csNA/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 5, nama: "Caroline Putri Kurniawan", link: "https://docs.google.com/spreadsheets/d/1CsVK2RLTInatcbfTFaiJ0rkJ8Ew6y2i8/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 6, nama: "David Rainor Cahyasvargawan", link: "https://docs.google.com/spreadsheets/d/1FF_d-5kvjudJmfZ2-rl5zybAxMwq_amN/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 7, nama: "Evangeline Yuri Anthonius Weking", link: "https://docs.google.com/spreadsheets/d/1H9FonMRqX5iOEfvEzY7TYhv7IAyFHBfT/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 8, nama: "Farrel Antonius", link: "https://docs.google.com/spreadsheets/d/1IhG6hfMwqTjkTGR9v3jasdOGx9GvbOK-/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 9, nama: "Gabriel Joseph Utomo", link: "https://docs.google.com/spreadsheets/d/1OAtQD43wo-hNaG3AxeDyGi0vUXmKTkjV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 10, nama: "Jeshelia Christel Siwu", link: "https://docs.google.com/spreadsheets/d/1OzZ7pl6ZWGqAbEnws-9gVfekJ953pGT5/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 11, nama: "Joshua Querido Brommor Aritonang", link: "https://docs.google.com/spreadsheets/d/1Syhqm1oMu2N8E7WprJAaLkmYYa0WmjzE/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 12, nama: "Juan Serafthio Lumintang", link: "https://docs.google.com/spreadsheets/d/1UXlEBPCms6zX9fGVSO8_z4NCW1-9MBas/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 13, nama: "Julliard Christ Lesmana", link: "https://docs.google.com/spreadsheets/d/1Y0uhZszZxpyY8qwSuy7_qckRcVPGLpfb/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 14, nama: "Kellyn Imanuella Ie", link: "https://docs.google.com/spreadsheets/d/1Y3Q4t-naK8sM4DKIM0H0XuGB_vC1FJ9O/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 15, nama: "Kenan Abisatya Dhanurindra Budyono", link: "https://docs.google.com/spreadsheets/d/1bqiPX50ZONe3YNWslyZDDPS7hFkZAtDP/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 16, nama: "Kenzo Imanuel Lie", link: "https://docs.google.com/spreadsheets/d/1cSCLb1Mbzo--OHwUhk1rQg8PLDFMUaqz/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 17, nama: "Kiesha Ibnurizkya Rahono", link: "https://docs.google.com/spreadsheets/d/1eHQNQSKqKjIkSHZ_Zus5_2LV55I3MX9o/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 18, nama: "Lionel Julio Chandra", link: "https://docs.google.com/spreadsheets/d/1fFzv1U4faNRPbCi4OO5AdiAUvneVv0A-/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 19, nama: "Made Metta Shanti Aolani", link: "https://docs.google.com/spreadsheets/d/1hE6VbHlu76lrfW1tfiiW2mG9b_pgTRvN/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 20, nama: "Michael Jaden Hadipraja", link: "https://docs.google.com/spreadsheets/d/1igfqvXgDloWiBuU0_ev5SYKnEFEJrhL0/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 21, nama: "Michelle Madeline Pontoh", link: "https://docs.google.com/spreadsheets/d/1lrE3KJ_QK4JBwmiqlKEeFXgihUCUsjSH/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 22, nama: "Raphael Putra Lusikooy", link: "https://docs.google.com/spreadsheets/d/1m_lVs_WcrVpaY3tdul12doh83EWOsnq3/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 23, nama: "Thomas Billy Matthew", link: "https://docs.google.com/spreadsheets/d/1p52YKxpgrB06xKVnFWi9ilr3s0Hi07kf/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 24, nama: "Tricia Uruvela", link: "https://docs.google.com/spreadsheets/d/1p_c2h6-qp7LbL_DjFdl2k1uuSr-RXMgo/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" }
-            ],
-            "8B": [
-                { absen: 1, nama: "Adelberth Manuel Pili", link: "https://docs.google.com/spreadsheets/d/1Anf_6wP3WEz9HO-jt_MC-JJC2e95Z0Lo/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 2, nama: "Atana Joshua Hosea Davyanto", link: "https://docs.google.com/spreadsheets/d/1C3wUR1I9i07c1Vp7hFKu3QwAN35B2-WI/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 3, nama: "Clarence Tesalonika Fernando", link: "https://docs.google.com/spreadsheets/d/1FyyqPPBDknxj4lufkog5Vvn2dYWetK61/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 4, nama: "Daniel Jeddayah Gunawan", link: "https://docs.google.com/spreadsheets/d/1H6Ha6Ez4QC9CziyfuurTKY0rhh8IZpNB/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 5, nama: "Dominique Gethsemane Emaputra", link: "https://docs.google.com/spreadsheets/d/1ItCYMZSwMM3OxL2wanbNvy_z1g-Dz9lV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 6, nama: "Gabriel Kevin Julian Ngai", link: "https://docs.google.com/spreadsheets/d/1LXg68jc0UU80atPaIzz2ShkXzjNn3dBv/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 7, nama: "I Made Juna Maharadya Wiguna", link: "https://docs.google.com/spreadsheets/d/1R6HJyfpRlNv00Ot7h1RervtglvyWAbU7/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 8, nama: "Jemima Jublina Sky Marcus", link: "https://docs.google.com/spreadsheets/d/1RMsZIA41FVzD8PJ-OMREhc690kVG3OCj/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 9, nama: "Joaquin Seviannoah Chinsen", link: "https://docs.google.com/spreadsheets/d/1SYnguMsu1I4_9kKD9_CcBhyyFCNjQkqO/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 10, nama: "Joshua Adi Prawira", link: "https://docs.google.com/spreadsheets/d/1YFZL4w8a13PjP-N8x4NgWexXe_S4jzjd/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 11, nama: "Karisma Tirza Malese", link: "https://docs.google.com/spreadsheets/d/1YONXG8DA56KCt0YdsTS7pDnRnvkkcIeU/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 12, nama: "Lauralyn Anaya Pattinasarany", link: "https://docs.google.com/spreadsheets/d/1ZLo0WsjEQnZY2i5Ow0GPtrvh_2FuFvYs/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 13, nama: "Luca Fajar Ryan", link: "https://docs.google.com/spreadsheets/d/1_GM8CLisgmIyEGEGuUXxN2FgllOQXE6n/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 14, nama: "Maria Dyah Tirta Rahayuningtyas", link: "https://docs.google.com/spreadsheets/d/1b4w0LcBuZ9RpbmwFHrgjJlmLg76kDe8Q/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 15, nama: "Maximillian Richard Tipaldi", link: "https://docs.google.com/spreadsheets/d/1g9qD2oTKlRuBMLyJAyXZa6iarjnWQCN9/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 16, nama: "Nathanael Owen Wangsa Wirawan", link: "https://docs.google.com/spreadsheets/d/1jRHImlAP2DIvkSGRra8dQH_uiQ0ZGqSy/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 17, nama: "Nathanael Xaviero Liem", link: "https://docs.google.com/spreadsheets/d/1keYgXdd6mCeLHsW1pzpmjH4Xh-XqmuFO/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 18, nama: "Oline Valeria Setiono", link: "https://docs.google.com/spreadsheets/d/1ly3qU1VPKDFYMp7AOAT29FNvF2h4ZuKc/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 19, nama: "Queen Clara Nataline", link: "https://docs.google.com/spreadsheets/d/1pkOsUwn0dE24aP91zP36wG5vN4a6buR9/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 20, nama: "Shine Ashley Misacious", link: "https://docs.google.com/spreadsheets/d/1q1PlRCn0jBfEImcdlcSImVO2HMMru1i6/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 21, nama: "Steven Chen", link: "https://docs.google.com/spreadsheets/d/1qH8ws9p5Os4m1RrVyv-bWDJvmwxmRtz3/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 22, nama: "Sultan Ramadhani Afitra David", link: "https://docs.google.com/spreadsheets/d/1sY7WZpVx8iLbNl1tKwEsdgApE8ikJAZI/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" },
-                { absen: 23, nama: "Thaddeus Erlangga Woleka Kariam", link: "https://docs.google.com/spreadsheets/d/1seaSH-GiwNRwl8HhFlzf7XWhhNDcsJ-x/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true" }
-            ]
+        // Data Mentah dari Prompt (Nama dan Link sudah disesuaikan berurutan)
+        const names6A = [
+            "Air Balakosa", "Albert Christhopper Prilia Hartawan", "Amazing Kasih Palada", "Amelsera Gloria Esterlita Fredrick", "Andrew Ryu Cendra", "Bellvania Achazia Andrina Ludji", "Clarisse Jadeite Bellvania Lonata", "Deven Timothy Kiuk", "Esther Violette Sharon Hendrawan", "Jonathan Indra Kusuma", "Kinanthi Reandra Abigail Budyono", "Manuel Garcia Ririhena", "Matthew Cristano Chandra", "Moses Prabowo", "Rise Shelby Misacious", "Una Tiana Ong", "Vygotsky Jananta Salmun Ruku", "Yosua Tampubolon", "Zooey Gabriella Crawfurd"
+        ];
+        const links6A = "https://docs.google.com/spreadsheets/d/11Mj__cyt3cxTKDPRhc_jXHojWDNH4TQV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/11xc98HAJFPV_iS5atRyyZXfR87H-m5Ux/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/13GMOGpkzJAgRp_rZ8gdpykq6e24hfAyK/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1BPv9qi7wprt7Evs0fWcPhKsF8gyR_GPd/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1FdfSEpwhO0bKNRt2Fu0wu00SE6flch50/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1MTj6C_hyIarqEJjQfx79Sh-qTgwgNLC9/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1RlB1T61Z4yIpT19iKCcudKZWYc2IcjEX/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1T6vILPu68RdwpcVXRB7OR6MggWP7uycO/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1V0II6uGgSVkTi5cAovwXpQMO1HuBzJLC/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1XN6Y42NoL2GlV8Z5TQ1p-6ro2kOk3Cs7/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1aCIUphsIKkbKql07ltwv3hVBzW_TDw8c/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1bLgzywg1WxoI1HmriDMVSNJ9JM-Hflkx/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1dMrJQzKR9b4mMxzG37oMwj-8piNuzz0u/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1f0vujB5AYAbA6u0XbfpJVlQCTJ6ag62E/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1gx95COvopYXiRS1TFixyjsctqABp_rA2/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1htLNgKqA9-VAB9UcEfxpsPPthFt3zaRU/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1klWY5JEdDFIcXZ8NZIADINLyu88KVAKq/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1mQ4qoAGFeFJTPmdLTl4E1NDQk3QBTg-U/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1nUbjkL7jdBD0Nao_QUynGXV81t8__j3B/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+
+        const names6B = [
+            "Ayu Cantika Surya Darma", "Boanerges Fridly Suman Tamonob", "Clairine Saralee Waltraud Lonata", "Colin Johannes Hartanto", "Cora Melody Lesmana", "Daniel Tampubolon", "Elgiva Patricia Muti Ngai", "Ezra Nathanael Arif", "Gosyena Queena Revival", "Grace Sayang Palada", "Joceline Lidya Sir Michael", "Joeb Edward Zhang", "Judith Shallom Libra", "Manuel Nathanael Nugraha", "Milanrose Lifesaver Manengkei", "Nail Ethan Setiono", "Oliver Wijayanto", "Silvana Nindy Putri Sujarwadi", "Syahira Husni"
+        ];
+        const links6B = "https://docs.google.com/spreadsheets/d/144mNigCHK2zqvAcaEa-gffgtVGKTknU1/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1AVxDNWzhoEwk6wKuV6D1sKiGci28Xjbv/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1Cm5_IfIkhZXx0R5tBazo5Az5d-SGp-Os/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1D1YndNZYfBYHBoacI2gIlZdxlAIB96TL/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1H4eu8SBgV13vVYzij3sqttQJEJZ7kScV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1JH4h42L6M7RuP05mRTYX0azgbcX7vs1G/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1LQ-vC1QkbL2mnJ3pdNp_4Fx3JCb8OEzl/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1R5Hl3lBFiVaAYKhY6_K1QqPhETUD-j9Y/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1RAbzw1j7OGOh-2P8Y4oCIBiYfy-d6khD/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1SiNljgKvhs1A1w8V-rT4O_h72ftwRO0m/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1YEPKxYPRmhLbANE7dD5qsSKQRRrcmgQ1/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1fs8R3mHhNNUhz-lJoOCYorNbNQhngBaw/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1mOIkZNO8vYEDCC487WElr-wTKmVpc67k/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1nqONKtzrtHDeJuvRQCC-7nTUTsvpGz0O/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1qJwWK52sjoCZirLMfGSMyWMv0F9ItlNf/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1sBWgHI8A9i4Ol1UzzGL4nfwCcGKGhT1R/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1skLk5J84RixURjH6QLNpWBMqX3T6xtv8/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1xN8KkoLfIYJEXDVFRyTD22G1ihl8l5rT/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/spreadsheets/d/1xeSE3IBgtSPT9OssG76lVHSx3y2VeXVI/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+
+        const studentData = {
+            "6A": names6A.map((name, index) => ({ name, link: links6A[index] })),
+            "6B": names6B.map((name, index) => ({ name, link: links6B[index] }))
         };
 
-        // Elemen DOM
-        const elKelas = document.getElementById('kelas');
-        const elAbsen = document.getElementById('absen');
-        const elNama = document.getElementById('nama');
-        const btnGenerate = document.getElementById('btn-generate');
+        // DOM Elements
+        const formSection = document.getElementById('form-section');
+        const resultSection = document.getElementById('result-section');
+        const form = document.getElementById('generator-form');
+        const kelasSelect = document.getElementById('kelas');
+        const namaSelect = document.getElementById('nama');
         
-        const formArea = document.getElementById('form-area');
-        const resultArea = document.getElementById('result-area');
-        
-        const lockedNama = document.getElementById('locked-nama');
-        const lockedKelas = document.getElementById('locked-kelas');
-        const lockedAbsen = document.getElementById('locked-absen');
-        
-        const linkDisplay = document.getElementById('link-display');
-        const btnOpen = document.getElementById('btn-open');
-        const btnCopy = document.getElementById('btn-copy');
-
-        const headerBg = document.getElementById('header-bg');
-        const headerTitle = document.getElementById('header-title');
-        const headerDesc = document.getElementById('header-desc');
-
-        const STORAGE_KEY = 'DataTugasTIK_Siswa';
-
-        // --- FUNGSI INISIALISASI (Cek apakah sudah pernah generate) ---
-        function checkExistingData() {
-            const savedData = localStorage.getItem(STORAGE_KEY);
+        // Cek Local Storage saat aplikasi dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedData = localStorage.getItem('userGeneratedLink');
+            
             if (savedData) {
+                // Jika sudah pernah generate, langsung tampilkan hasilnya
                 const data = JSON.parse(savedData);
-                lockInterface(data);
+                showResult(data);
             }
-        }
+        });
 
-        // --- FUNGSI MENGUNCI TAMPILAN ---
-        function lockInterface(data) {
-            // Sembunyikan form input
-            formArea.classList.add('hidden');
+        // Event: Ketika kelas dipilih, perbarui daftar nama
+        kelasSelect.addEventListener('change', (e) => {
+            const selectedClass = e.target.value;
             
-            // Tampilkan area hasil/terkunci
-            resultArea.classList.remove('hidden');
-            
-            // Ubah gaya header
-            headerBg.classList.replace('bg-blue-600', 'bg-gray-800');
-            headerTitle.textContent = 'Link Terkunci';
-            headerDesc.textContent = 'Browser ini sudah dikaitkan dengan satu identitas';
+            // Bersihkan dan aktifkan dropdown nama
+            namaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nama Siswa --</option>';
+            namaSelect.disabled = false;
 
-            // Isi data di UI
-            lockedNama.textContent = data.namaInput;
-            lockedKelas.textContent = data.kelas;
-            lockedAbsen.textContent = data.absen;
-            
-            linkDisplay.value = data.link;
-            btnOpen.href = data.link;
-        }
-
-        // --- LOGIC FORM INPUT ---
-        function checkFormValidity() {
-            const isKelasValid = elKelas.value !== "";
-            const isAbsenValid = elAbsen.value !== "";
-            const isNamaValid = elNama.value.trim() !== ""; 
-
-            if (isKelasValid && isAbsenValid && isNamaValid) {
-                btnGenerate.disabled = false;
-                btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                btnGenerate.disabled = true;
-                btnGenerate.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        elKelas.addEventListener('change', (e) => {
-            const kelas = e.target.value;
-            elAbsen.innerHTML = '<option value="" disabled selected>-- Pilih No Absen --</option>';
-            
-            if (kelas && dataSiswa[kelas]) {
-                dataSiswa[kelas].forEach(siswa => {
-                    const opt = document.createElement('option');
-                    opt.value = siswa.absen;
-                    opt.textContent = `${siswa.absen}`;
-                    elAbsen.appendChild(opt);
+            if (studentData[selectedClass]) {
+                studentData[selectedClass].forEach((student, index) => {
+                    const option = document.createElement('option');
+                    option.value = index; // simpan index untuk memudahkan referensi
+                    option.textContent = student.name;
+                    namaSelect.appendChild(option);
                 });
-                elAbsen.disabled = false;
-            } else {
-                elAbsen.disabled = true;
-            }
-            checkFormValidity();
-        });
-
-        elAbsen.addEventListener('change', checkFormValidity);
-        elNama.addEventListener('input', checkFormValidity);
-
-        // --- LOGIC TOMBOL GENERATE (MENGUNCI DATA) ---
-        btnGenerate.addEventListener('click', () => {
-            const kelas = elKelas.value;
-            const absen = parseInt(elAbsen.value);
-            const namaInput = elNama.value.trim();
-
-            if (kelas && absen && namaInput) {
-                const siswa = dataSiswa[kelas].find(s => s.absen === absen);
-                if (siswa) {
-                    // Buat object data untuk disimpan
-                    const userData = {
-                        kelas: kelas,
-                        absen: absen,
-                        namaInput: namaInput,
-                        link: siswa.link
-                    };
-                    
-                    // Simpan permanen di browser
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-                    
-                    // Kunci tampilan
-                    lockInterface(userData);
-                }
             }
         });
 
-        // --- LOGIC COPY TEXT ---
-        btnCopy.addEventListener('click', () => {
-            linkDisplay.select();
-            document.execCommand('copy');
-            btnCopy.textContent = 'Tersalin!';
-            btnCopy.classList.add('bg-green-200', 'text-green-800');
+        // Event: Form Submit
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const selectedClass = kelasSelect.value;
+            const selectedIndex = namaSelect.value;
+
+            if (!selectedClass || selectedIndex === "") return;
+
+            const studentInfo = studentData[selectedClass][selectedIndex];
+            
+            const finalDataToSave = {
+                kelas: selectedClass,
+                nama: studentInfo.name,
+                link: studentInfo.link
+            };
+
+            // Simpan ke Local Storage agar tidak bisa generate ulang
+            localStorage.setItem('userGeneratedLink', JSON.stringify(finalDataToSave));
+
+            // Tampilkan Hasil
+            showResult(finalDataToSave);
+        });
+
+        // Fungsi Menampilkan Hasil
+        function showResult(data) {
+            formSection.classList.add('hidden');
+            resultSection.classList.remove('hidden');
+
+            document.getElementById('res-nama').textContent = data.nama;
+            document.getElementById('res-kelas').textContent = data.kelas;
+            document.getElementById('res-link').textContent = data.link;
+            document.getElementById('res-link').href = data.link;
+            document.getElementById('res-btn-open').href = data.link;
+            
+            // Setup Copy Button
+            document.getElementById('btn-copy').onclick = () => copyToClipboard(data.link);
+        }
+
+        // Fungsi Salin Link
+        function copyToClipboard(text) {
+            const tempInput = document.createElement("input");
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand("copy");
+                showToast();
+            } catch (err) {
+                console.error("Gagal menyalin text: ", err);
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
             setTimeout(() => {
-                btnCopy.textContent = 'Copy';
-                btnCopy.classList.remove('bg-green-200', 'text-green-800');
-            }, 2000);
-        });
-
-        // Jalankan pengecekan saat halaman dimuat
-        checkExistingData();
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
     </script>
 </body>
 </html>
