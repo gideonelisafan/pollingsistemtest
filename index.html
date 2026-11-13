@@ -85,14 +85,14 @@
     <script>
         // Data Mentah dari Prompt (Nama dan Link sudah disesuaikan berurutan)
         const names7A = [
-            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4"
+            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4", "Kelompok 5", "Kelompok 6"
         ];
-        const links7A = "https://docs.google.com/document/d/1QNeSs8IXTyOIJV35avyfbPoJYgrS3skg/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1V-MJnPkOOQ8c_-wAt3y3EnGiIaWEGIyC/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1dPPsN08CGBlkbB3PTq59EO3L0wTtb4Nr/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1kziByf_gzQLuAtQe6PSAoEiutsEowYsV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+        const links7A = "https://docs.google.com/document/d/1QNeSs8IXTyOIJV35avyfbPoJYgrS3skg/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1V-MJnPkOOQ8c_-wAt3y3EnGiIaWEGIyC/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1WPD4lL6TiAjlnrbrJl7Hm-JShrcAyrtg/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1dPPsN08CGBlkbB3PTq59EO3L0wTtb4Nr/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1kCq1kHtoejfhQFPwIPxrlFP9mnbZkSz1/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1kziByf_gzQLuAtQe6PSAoEiutsEowYsV/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
 
         const names7B = [
-            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4"
+            "Kelompok 1", "Kelompok 2", "Kelompok 3", "Kelompok 4", "Kelompok 5", "Kelompok 6"
         ];
-        const links7B = "https://docs.google.com/document/d/1DoYPN2eA0z2WmGp-4uTGFoX_RBtudSuD/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1HW2tlnnmTYWoNPRvRNvGOi-arcQGJZHH/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1WpBS2a6oR1YWYubgg7jklNCrRIGkHH3h/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1fbJjUHpkmIPNbgn9dxfykQwOWYQnpNBQ/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
+        const links7B = "https://docs.google.com/document/d/1DoYPN2eA0z2WmGp-4uTGFoX_RBtudSuD/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1HW2tlnnmTYWoNPRvRNvGOi-arcQGJZHH/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1LjIQT5B9_RM_a_krO8jEkiAfn_fAKlBQ/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1WpBS2a6oR1YWYubgg7jklNCrRIGkHH3h/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1fbJjUHpkmIPNbgn9dxfykQwOWYQnpNBQ/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true, https://docs.google.com/document/d/1fyRiBNA-5b4bpOiXioWdK9-mqx9OrGKd/edit?usp=sharing&ouid=117606661997581537426&rtpof=true&sd=true".split(", ");
 
         const studentData = {
             "7A": names7A.map((name, index) => ({ name, link: links7A[index] })),
@@ -108,7 +108,7 @@
         
         // Cek Local Storage saat aplikasi dimuat
         document.addEventListener('DOMContentLoaded', () => {
-            const savedData = localStorage.getItem('userGeneratedLink_7');
+            const savedData = localStorage.getItem('userGeneratedLink_7_v2');
             
             if (savedData) {
                 // Jika sudah pernah generate, langsung tampilkan hasilnya
@@ -153,7 +153,7 @@
             };
 
             // Simpan ke Local Storage agar tidak bisa generate ulang
-            localStorage.setItem('userGeneratedLink_7', JSON.stringify(finalDataToSave));
+            localStorage.setItem('userGeneratedLink_7_v2', JSON.stringify(finalDataToSave));
 
             // Tampilkan Hasil
             showResult(finalDataToSave);
